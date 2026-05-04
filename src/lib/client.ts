@@ -1,11 +1,12 @@
 import { $OpenApiUtil } from '@alicloud/openapi-core'
 import * as $dara from '@darabonba/typescript'
 
-import { ConfigManager } from './config.js'
+import { ConfigManager } from './config/config.js'
 
 const configManager = new ConfigManager()
 
 export async function buildOpenApiConfig(endpoint: string): Promise<$OpenApiUtil.Config> {
+  // 构建阿里云 OpenAPI 配置对象,用于初始化各类服务客户端
   const profile = await configManager.getCurrentProfile()
   if (!profile) {
     throw new Error('配置文件不存在，请使用 ali config set 命令生成配置文件。')
@@ -20,6 +21,7 @@ export async function buildOpenApiConfig(endpoint: string): Promise<$OpenApiUtil
 }
 
 export function createRuntime(): $dara.RuntimeOptions {
+  // 创建 Dara 运行时选项对象,用于配置 API 调用的运行时参数
   return new $dara.RuntimeOptions()
 }
 
@@ -27,6 +29,7 @@ export function createRuntime(): $dara.RuntimeOptions {
 type AnyConstructor = new (...args: any[]) => any
 
 export async function getEcsClient(): Promise<{ client: InstanceType<AnyConstructor>; region: string }> {
+  // 获取 ECS 服务客户端实例,用于管理云服务器资源
   const profile = await configManager.getCurrentProfile()
   if (!profile) {
     throw new Error('配置文件不存在，请使用 ali config set 命令生成配置文件。')
@@ -40,6 +43,7 @@ export async function getEcsClient(): Promise<{ client: InstanceType<AnyConstruc
 }
 
 export async function getVpcClient(): Promise<{ client: InstanceType<AnyConstructor>; region: string }> {
+  // 获取 VPC 服务客户端实例,用于管理专有网络资源
   const profile = await configManager.getCurrentProfile()
   if (!profile) {
     throw new Error('配置文件不存在，请使用 ali config set 命令生成配置文件。')

@@ -3,34 +3,38 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import type { AppConfig, Profile } from './types.js'
+import type { AppConfig, Profile } from '../types.js'
 
-import { regionChoices } from './constants.js'
-import { confirmPrompt, fuzzySelectPrompt, textPrompt } from './prompts.js'
+import { regionChoices } from '../constants.js'
+import { confirmPrompt, fuzzySelectPrompt, textPrompt } from '../prompts.js'
 
 export class ConfigManager {
   private configPath: string
 
   constructor() {
+    // 初始化配置文件路径为用户主目录下的 .aliops/config.json
     this.configPath = join(homedir(), '.aliops', 'config.json')
   }
 
   async getCurrentProfile(): Promise<null | Profile> {
+    // 获取当前激活的配置文件
     const config = await this.load()
     if (!config?.current) return null
     return config.profiles.find((p) => p.name === config.current) ?? null
   }
 
   async getRegionId(): Promise<string | undefined> {
+    // 获取当前配置文件的区域 ID
     const profile = await this.getCurrentProfile()
     return profile?.region_id
   }
 
   async list(): Promise<void> {
+    // 列出所有配置文件信息
     console.log(`配置文件路径: ${this.configPath}`)
     const config = await this.load()
     if (!config) {
-      console.log('配置文件不存在，请使用 ali config set 命令生成配置文件。')
+      console.log('配置文件不存在,请使用 ali config set 命令生成配置文件。')
       return
     }
 
@@ -38,6 +42,7 @@ export class ConfigManager {
   }
 
   async load(): Promise<AppConfig | null> {
+    // 从磁盘加载配置文件
     try {
       const content = await readFile(this.configPath, 'utf8')
       return JSON.parse(content) as AppConfig
@@ -47,12 +52,14 @@ export class ConfigManager {
   }
 
   async save(config: AppConfig): Promise<void> {
+    // 保存配置文件到磁盘
     const dir = this.configPath.replace(/[\\/][^\\/]+$/, '')
     await mkdir(dir, { recursive: true })
     await writeFile(this.configPath, JSON.stringify(config, null, 4))
   }
 
   async set(): Promise<void> {
+    // 交互式创建或更新配置文件
     const profileName = await textPrompt('请输入配置文件的名字:')
     if (!profileName) return
 
@@ -83,7 +90,7 @@ export class ConfigManager {
       config.profiles.push(newProfile)
       console.log(`配置文件 '${profileName}' 已添加`)
     } else {
-      const overwrite = await confirmPrompt(`配置文件 '${profileName}' 已存在，是否覆盖？`)
+      const overwrite = await confirmPrompt(`配置文件 '${profileName}' 已存在,是否覆盖?`)
       if (!overwrite) {
         console.log('操作已取消')
         return
@@ -93,7 +100,7 @@ export class ConfigManager {
       console.log(`配置文件 '${profileName}' 已覆盖`)
     }
 
-    const applyNow = await confirmPrompt('是否立即应用当前配置？')
+    const applyNow = await confirmPrompt('是否立即应用当前配置?')
     if (applyNow) {
       config.current = profileName
       console.log(`当前配置已切换到 '${profileName}'`)
@@ -104,6 +111,7 @@ export class ConfigManager {
   }
 
   async setRegion(): Promise<string | undefined> {
+    // 交互式更新当前配置文件的区域 ID
     const newRegionId = await fuzzySelectPrompt('请选择区域:', regionChoices)
     if (!newRegionId) {
       console.log('操作已取消')
@@ -116,6 +124,7 @@ export class ConfigManager {
   }
 
   async updateCurrentProfile(updates: Partial<Profile>): Promise<null | Profile> {
+    // 更新当前激活配置文件的部分字段
     const config = await this.load()
     if (!config?.current) return null
 

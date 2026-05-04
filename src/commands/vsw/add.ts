@@ -5,7 +5,7 @@ import type { PromptChoice } from '../../lib/types.js'
 
 import { listZones } from '../../lib/ecs/ecs.js'
 import { selectPrompt, textPrompt } from '../../lib/prompts.js'
-import { validateCidrBlock } from '../../lib/validators.js'
+import { validateCidrBlock } from '../../lib/validator/validators.js'
 import { listVpcs } from '../../lib/vpc/vpc.js'
 import { createVSwitch } from '../../lib/vsw/vsw.js'
 

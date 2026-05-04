@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 
-import { ConfigManager } from '../../lib/config.js'
+import { ConfigManager } from '../../lib/config/config.js'
 
 export default class ConfigSet extends Command {
   static description = '创建/更新配置文件 或 切换区域'
