@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "esModuleInterop": true,
     "module": "Node16",
     "outDir": "dist",
     "rootDir": "src",
