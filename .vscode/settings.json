@@ -46,5 +46,6 @@
     },
     "workbench.tree.indent": 20,
     "editor.minimap.maxColumn": 40,
-    "git.followTagsWhenSync": true
+    "git.followTagsWhenSync": true,
+    "foldOnOpen.targets": ["Level3"]
 }
