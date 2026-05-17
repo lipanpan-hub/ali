@@ -3,6 +3,8 @@ import {Command, Flags} from '@oclif/core'
 import {ImageManager} from '../../lib/img/img.js'
 
 export default class ImgLs extends Command {
+  static aliases = ['img:ls']
+
   static description = '列出指定平台的可用镜像'
 
   static examples = [

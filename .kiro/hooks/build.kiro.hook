@@ -3,10 +3,12 @@
   "enabled": true,
   "name": "build",
   "when": {
-    "type": "userTriggered"
+    "type": "agentStop"
   },
   "then": {
     "type": "runCommand",
     "command": "npm run build"
-  }
+  },
+  "workspaceFolderName": "ali",
+  "shortName": "build"
 }

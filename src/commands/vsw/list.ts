@@ -5,6 +5,8 @@ import {VpcManager} from '../../lib/vpc/vpc.js'
 import {VSwitchManager} from '../../lib/vsw/vsw.js'
 
 export default class VswLs extends Command {
+  static aliases = ['vsw:ls']
+
   static args = {
     vpcId: Args.string({description: 'VPC ID (可选，不提供则交互式选择)', required: false}),
   }
