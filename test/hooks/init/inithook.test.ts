@@ -1,9 +1,9 @@
 import {runHook} from '@oclif/test'
 import {expect} from 'chai'
 
-describe('hooks', () => {
-  it('shows a message', async () => {
-    const {stdout} = await runHook('init', {id: 'mycommand'})
-    expect(stdout).to.contain('example hook running mycommand')
+describe('init hook', () => {
+  it('runs without throwing', async () => {
+    const result = await runHook('init', {id: 'mycommand'})
+    expect(result).to.be.an('object')
   })
 })

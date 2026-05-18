@@ -1,168 +1,109 @@
-import {createRequire} from 'node:module'
+import {
+  CreateVSwitchRequest,
+  CreateVSwitchResponse,
+  DeleteVSwitchRequest,
+  DescribeVSwitchAttributesRequest,
+  DescribeVSwitchAttributesResponse,
+  DescribeVSwitchesRequest,
+  DescribeVSwitchesResponse,
+} from '@alicloud/vpc20160428'
 
-import * as $Vpc20160428 from '@alicloud/vpc20160428'
-import * as $Util from '@alicloud/tea-util'
-
-import {ClientConfig} from '../client/client.js'
-
-const require = createRequire(import.meta.url)
-const Vpc20160428 = require('@alicloud/vpc20160428').default
+import {createVpcClient} from '../client/client.js'
+import {createRuntime} from '../client/runtime.js'
+import {wrap} from '../client/wrap.js'
 
 export class VSwitchManager {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected client: any = null
   protected region: string = ''
 
   constructor() {
-    const clientConfig = ClientConfig.getInstance()
-    if (!clientConfig.config) {
-      console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
-      return
-    }
-
-    this.region = clientConfig.region
-    const config = {
-      ...clientConfig.config,
-      endpoint: `vpc.${this.region}.aliyuncs.com`,
-    }
-    this.client = new Vpc20160428(config)
+    const c = createVpcClient()
+    if (!c) return
+    this.client = c.client
+    this.region = c.region
   }
 
-  // 获取交换机详细信息
-  async getVSwitchAttributes(vSwitchId: string): Promise<$Vpc20160428.DescribeVSwitchAttributesResponse | null> {
-    if (!this.client) return null
-
-    const request = new $Vpc20160428.DescribeVSwitchAttributesRequest({
-      regionId: this.region,
-      vSwitchId,
-    })
-
-    const runtime = new $Util.RuntimeOptions({})
-
-    try {
-      return await this.client.describeVSwitchAttributesWithOptions(request, runtime)
-    } catch (error: any) {
-      console.log(error.message)
-      if (error.data?.Recommend) {
-        console.log(error.data.Recommend)
-      }
-
-      return null
-    }
-  }
-
-  // 创建交换机
+  // #region 创建
   async createVSwitch(
     vpcId: string,
     zoneId: string,
     cidrBlock: string,
     vSwitchName: string,
-  ): Promise<$Vpc20160428.CreateVSwitchResponse | null> {
+  ): Promise<CreateVSwitchResponse | null> {
     if (!this.client) return null
 
-    const request = new $Vpc20160428.CreateVSwitchRequest({
+    const request = new CreateVSwitchRequest({
       cidrBlock,
       regionId: this.region,
-      vSwitchName,
       vpcId,
+      vSwitchName,
       zoneId,
     })
 
-    const runtime = new $Util.RuntimeOptions({})
-
-    try {
-      const res = await this.client.createVSwitchWithOptions(request, runtime)
+    return wrap('创建交换机', async () => {
+      const res = await this.client.createVSwitchWithOptions(request, createRuntime())
       console.log(`交换机创建成功: 名称=${vSwitchName}, 可用区=${zoneId}, CIDR块=${cidrBlock}`)
-      return res
-    } catch (error: any) {
-      console.log(`交换机创建失败: ${error.message}`)
-      if (error.data?.Recommend) {
-        console.log(`诊断建议: ${error.data.Recommend}`)
-      }
-
-      return null
-    }
+      return res as CreateVSwitchResponse
+    })
   }
+  // #endregion
 
-  // 删除交换机
+  // #region 删除
   async deleteVSwitch(vSwitchId: string): Promise<boolean> {
     if (!this.client) return false
 
-    const request = new $Vpc20160428.DeleteVSwitchRequest({
-      regionId: this.region,
-      vSwitchId,
-    })
-
-    const runtime = new $Util.RuntimeOptions({})
-
-    try {
-      await this.client.deleteVSwitchWithOptions(request, runtime)
+    const request = new DeleteVSwitchRequest({regionId: this.region, vSwitchId})
+    const ok = await wrap('删除交换机', async () => {
+      await this.client.deleteVSwitchWithOptions(request, createRuntime())
       console.log(`交换机 ${vSwitchId} 删除成功`)
       return true
-    } catch (error: any) {
-      console.log(`交换机删除失败: ${error.message}`)
-      if (error.data?.Recommend) {
-        console.log(`诊断建议: ${error.data.Recommend}`)
-      }
-
-      return false
-    }
+    })
+    return ok ?? false
   }
+  // #endregion
 
-  // 获取指定 VPC 下的交换机列表
-  async getVSwitches(vpcId: string): Promise<$Vpc20160428.DescribeVSwitchesResponse | null> {
+  // #region 详情
+  async getVSwitchAttributes(vSwitchId: string): Promise<DescribeVSwitchAttributesResponse | null> {
     if (!this.client) return null
 
-    const request = new $Vpc20160428.DescribeVSwitchesRequest({
-      regionId: this.region,
-      vpcId,
+    const request = new DescribeVSwitchAttributesRequest({regionId: this.region, vSwitchId})
+
+    return wrap('获取交换机详情', async () => {
+      const res = await this.client.describeVSwitchAttributesWithOptions(request, createRuntime())
+      return res as DescribeVSwitchAttributesResponse
     })
-
-    const runtime = new $Util.RuntimeOptions({})
-
-    try {
-      return await this.client.describeVSwitchesWithOptions(request, runtime)
-    } catch (error: any) {
-      console.log(error.message)
-      if (error.data?.Recommend) {
-        console.log(error.data.Recommend)
-      }
-
-      return null
-    }
   }
+  // #endregion
 
-  // 列出指定 VPC 下的所有交换机
+  // #region 获取列表
+  async getVSwitches(vpcId: string): Promise<DescribeVSwitchesResponse | null> {
+    if (!this.client) return null
+
+    const request = new DescribeVSwitchesRequest({regionId: this.region, vpcId})
+
+    return wrap('获取交换机列表', async () => {
+      const res = await this.client.describeVSwitchesWithOptions(request, createRuntime())
+      return res as DescribeVSwitchesResponse
+    })
+  }
+  // #endregion
+
+  // #region 列出
   async listVSwitches(vpcId: string): Promise<void> {
-    if (!this.client) return
+    const res = await this.getVSwitches(vpcId)
+    const items = res?.body?.vSwitches?.vSwitch ?? []
+    if (items.length === 0) {
+      console.log('当前 VPC 没有交换机')
+      return
+    }
 
-    const request = new $Vpc20160428.DescribeVSwitchesRequest({
-      regionId: this.region,
-      vpcId,
-    })
-
-    const runtime = new $Util.RuntimeOptions({})
-
-    try {
-      const res = await this.client.describeVSwitchesWithOptions(request, runtime)
-      if (!res || !res.body?.vSwitches?.vSwitch) {
-        console.log('当前 VPC 没有交换机')
-        return
-      }
-
-      const vSwitches = res.body.vSwitches.vSwitch
-      // 按可用区ID字母顺序排序
-      vSwitches.sort((a: any, b: any) => (a.zoneId || '').localeCompare(b.zoneId || ''))
-
-      for (const vsw of vSwitches) {
-        console.log(
-          `VSwitchId: ${vsw.vSwitchId}, VSwitchName: ${vsw.vSwitchName}, ZoneId: ${vsw.zoneId}, CidrBlock: ${vsw.cidrBlock}, VpcId: ${vsw.vpcId}`,
-        )
-      }
-    } catch (error: any) {
-      console.log(`获取交换机列表失败: ${error.message}`)
-      if (error.data?.Recommend) {
-        console.log(`诊断建议: ${error.data.Recommend}`)
-      }
+    const sorted = [...items].sort((a, b) => (a.zoneId || '').localeCompare(b.zoneId || ''))
+    for (const v of sorted) {
+      console.log(
+        `VSwitchId: ${v.vSwitchId}, VSwitchName: ${v.vSwitchName}, ZoneId: ${v.zoneId}, CidrBlock: ${v.cidrBlock}, VpcId: ${v.vpcId}`,
+      )
     }
   }
+  // #endregion
 }

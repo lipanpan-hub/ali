@@ -1,42 +1,52 @@
-import {$OpenApiUtil} from '@alicloud/openapi-core'
+import {createRequire} from 'node:module'
 
 import {ConfigManager} from '../config/config.js'
 
-// 单例模式的客户端配置类
-export class ClientConfig {
-  private static instance: ClientConfig | null = null
-  public config: $OpenApiUtil.Config | null = null
-  public region: string = ''
+const require = createRequire(import.meta.url)
+const {$OpenApiUtil} = require('@alicloud/openapi-core')
+const Ecs20140526 = require('@alicloud/ecs20140526').default
+const Vpc20160428 = require('@alicloud/vpc20160428').default
 
-  private constructor() {
-    const configManager = new ConfigManager()
-    const currentProfile = configManager.getCurrentProfile()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SdkClient = any
 
-    if (!currentProfile) {
-      console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
-      return
-    }
+let cached: null | {config: {accessKeyId: string; accessKeySecret: string}; region: string} = null
 
-    // 创建配置对象
-    this.config = new $OpenApiUtil.Config({
-      accessKeyId: currentProfile.access_key_id,
-      accessKeySecret: currentProfile.access_key_secret,
-    })
+function getConfig() {
+  if (cached) return cached
 
-    this.region = currentProfile.region_id
+  const profile = new ConfigManager().getCurrentProfile()
+  if (!profile) {
+    console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
+    return null
   }
 
-  // 获取单例实例
-  public static getInstance(): ClientConfig {
-    if (!ClientConfig.instance) {
-      ClientConfig.instance = new ClientConfig()
-    }
-
-    return ClientConfig.instance
+  cached = {
+    config: {accessKeyId: profile.access_key_id, accessKeySecret: profile.access_key_secret},
+    region: profile.region_id,
   }
+  return cached
+}
 
-  // 重置单例(用于配置更新后重新加载)
-  public static reset(): void {
-    ClientConfig.instance = null
-  }
+export function resetAliClient(): void {
+  cached = null
+}
+
+export interface ClientWithRegion {
+  client: SdkClient
+  region: string
+}
+
+export function createEcsClient(): ClientWithRegion | null {
+  const c = getConfig()
+  if (!c) return null
+  const config = new $OpenApiUtil.Config({...c.config, endpoint: `ecs.${c.region}.aliyuncs.com`})
+  return {client: new Ecs20140526(config), region: c.region}
+}
+
+export function createVpcClient(): ClientWithRegion | null {
+  const c = getConfig()
+  if (!c) return null
+  const config = new $OpenApiUtil.Config({...c.config, endpoint: `vpc.${c.region}.aliyuncs.com`})
+  return {client: new Vpc20160428(config), region: c.region}
 }

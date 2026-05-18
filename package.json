@@ -9,15 +9,16 @@
   "bugs": "https://github.com/lipanpan-hub/ali/issues",
   "dependencies": {
     "@alicloud/ecs20140526": "^7.7.5",
+    "@alicloud/openapi-core": "^1.0.7",
+    "@alicloud/tea-util": "^1.4.11",
     "@alicloud/vpc20160428": "^7.2.1",
+    "@inquirer/prompts": "^7.10.1",
     "@oclif/core": "^4",
     "@oclif/plugin-autocomplete": "^3.2.46",
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-not-found": "^3.2.81",
     "@oclif/plugin-version": "^2.2.42",
-    "@oclif/plugin-warn-if-update-available": "^3.1.61",
-    "fuse.js": "^7.3.0",
-    "prompts": "^2.4.2"
+    "@oclif/plugin-warn-if-update-available": "^3.1.61"
   },
   "devDependencies": {
     "@eslint/compat": "^1",
@@ -26,7 +27,6 @@
     "@types/chai": "^4",
     "@types/mocha": "^10",
     "@types/node": "^18",
-    "@types/prompts": "^2.4.9",
     "chai": "^4",
     "eslint": "^9",
     "eslint-config-oclif": "^6",

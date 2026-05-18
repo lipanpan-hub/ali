@@ -4,10 +4,8 @@ import {ConfigManager} from '../../lib/config/config.js'
 
 export default class ConfigLs extends Command {
   static aliases = ['config:ls']
-
-  static description = '列出所有的配置'
-
-  static examples = ['<%= config.bin %> <%= command.id %>']
+static description = '列出所有的配置'
+static examples = ['<%= config.bin %> <%= command.id %>']
 
   public async run(): Promise<void> {
     const configManager = new ConfigManager()
