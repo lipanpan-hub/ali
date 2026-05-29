@@ -49,8 +49,8 @@ jobs:
       - name: Setup git
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         run: |
-          git config --global user.email ${{ secrets.GH_EMAIL }}
-          git config --global user.name ${{ secrets.GH_USERNAME }}
+          git config --global user.email "lipanpanmail@163.com"
+          git config --global user.name "lipanpan"
       
       # 步骤5：生成 oclif README 文档（仅在版本不存在时执行）
       - name: Generate oclif README
