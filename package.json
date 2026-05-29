@@ -73,6 +73,7 @@
       "@oclif/plugin-version"
     ],
     "topicSeparator": " ",
+    "nsisCustomization": "nsis/nsis.nsi",
     "topics": {
       "bkt": {
         "description": "管理 OSS 存储空间"
