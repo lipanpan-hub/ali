@@ -21,7 +21,8 @@
     "@oclif/plugin-warn-if-update-available": "^3.1.61",
     "ali-oss": "^6.23.0",
     "cli-table3": "^0.6.5",
-    "fuse.js": "^7.3.0"
+    "fuse.js": "^7.3.0",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@eslint/compat": "^1",
@@ -31,6 +32,7 @@
     "@types/chai": "^4",
     "@types/mocha": "^10",
     "@types/node": "^18",
+    "@types/prompts": "^2.4.9",
     "chai": "^4",
     "eslint": "^9",
     "eslint-config-oclif": "^6",

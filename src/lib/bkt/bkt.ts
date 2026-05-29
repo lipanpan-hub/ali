@@ -1,8 +1,11 @@
+import {readdirSync, statSync} from 'node:fs'
 import {createRequire} from 'node:module'
+import {join} from 'node:path'
 
 import * as inquirer from '@inquirer/prompts'
 import Table from 'cli-table3'
 import Fuse from 'fuse.js'
+import prompts from 'prompts'
 
 import {wrap} from '../client/wrap.js'
 import {ConfigManager} from '../config/config.js'
@@ -27,6 +30,7 @@ interface BucketProperty {
 
 const BUCKET_PROPERTIES: BucketProperty[] = [
   {description: '访问控制权限 (private/public-read/public-read-write)', key: 'acl', label: 'ACL 访问控制'},
+  {description: '开启或关闭阻止公共访问', key: 'blockPublicAccess', label: '阻止公共访问'},
   {description: '日志存储前缀', key: 'logging', label: '日志设置'},
   {description: '静态网站托管配置', key: 'website', label: '静态网站'},
 ]
@@ -205,6 +209,80 @@ export class BktManager {
   }
   // #endregion
 
+  // #region 上传文件
+  async uploadFiles(): Promise<void> {
+    if (!this.client || !this.profile) return
+
+    // 扫描当前目录文件
+    const files = this.scanFiles(process.cwd())
+    if (files.length === 0) {
+      console.log('当前目录下没有文件')
+      return
+    }
+
+    // 交互式模糊搜索多选文件
+    const choices = files.map((f) => ({title: f, value: f}))
+    const fuse = new Fuse(choices, {keys: ['title'], threshold: 0.4})
+
+    const {selectedFiles} = await prompts({
+      choices,
+      message: '搜索并选择要上传的文件',
+      name: 'selectedFiles',
+      suggest: async (input: string, choices: prompts.Choice[]) => {
+        if (!input) return choices
+        return fuse.search(input).map((r) => r.item)
+      },
+      type: 'autocompleteMultiselect',
+    })
+
+    if (!selectedFiles || selectedFiles.length === 0) {
+      console.log('未选择任何文件')
+      return
+    }
+
+    // 交互式选择存储桶
+    const bucket = await this.selectBucket()
+    if (!bucket) return
+
+    // 上传文件
+    const client = new OSS({
+      accessKeyId: this.profile.access_key_id,
+      accessKeySecret: this.profile.access_key_secret,
+      bucket: bucket.name,
+      region: bucket.region,
+    })
+
+    for (const file of selectedFiles) {
+      const filePath = join(process.cwd(), file)
+      // eslint-disable-next-line no-await-in-loop
+      await wrap(`上传 ${file}`, async () => {
+        await client.put(file, filePath)
+        console.log(`✓ ${file}`)
+      })
+    }
+
+    console.log(`共上传 ${selectedFiles.length} 个文件到 ${bucket.name}`)
+  }
+
+  private scanFiles(dir: string, base?: string): string[] {
+    const results: string[] = []
+    const entries = readdirSync(dir)
+    for (const entry of entries) {
+      if (entry.startsWith('.') || entry === 'node_modules') continue
+      const fullPath = join(dir, entry)
+      const relPath = base ? join(base, entry) : entry
+      const stat = statSync(fullPath)
+      if (stat.isFile()) {
+        results.push(relPath.replaceAll('\\', '/'))
+      } else if (stat.isDirectory()) {
+        results.push(...this.scanFiles(fullPath, relPath))
+      }
+    }
+
+    return results
+  }
+  // #endregion
+
   // #region 设置存储桶属性
   async setBucketProperty(bucket: BucketInfo, property: BucketProperty): Promise<void> {
     if (!this.client || !this.profile) return
@@ -233,11 +311,29 @@ export class BktManager {
           } catch (error) {
             const msg = (error as {message?: string}).message ?? ''
             if (msg.includes('public') && msg.includes('not allowed')) {
-              throw new Error('当前存储桶开启了「阻止公共访问」，请先在 OSS 控制台 Web 端手动关闭该选项后重试')
+              throw new Error('当前存储桶开启了「阻止公共访问」，请先关闭该选项后重试')
             }
 
             throw error
           }
+        })
+        break
+      }
+
+      case 'blockPublicAccess': {
+        const block = await inquirer.select<boolean>({
+          choices: [
+            {name: '开启 (阻止公共访问)', value: true},
+            {name: '关闭 (允许公共访问)', value: false},
+          ],
+          message: '是否阻止公共访问',
+        })
+        await wrap('设置阻止公共访问', async () => {
+          const params = client._bucketRequestParams('PUT', bucket.name, 'publicAccessBlock', {})
+          params.content = `<?xml version="1.0" encoding="UTF-8"?><PublicAccessBlockConfiguration><BlockPublicAccess>${block}</BlockPublicAccess></PublicAccessBlockConfiguration>`
+          params.successStatuses = [200]
+          await client.request(params)
+          console.log(`存储桶 ${bucket.name} 的阻止公共访问已${block ? '开启' : '关闭'}`)
         })
         break
       }
