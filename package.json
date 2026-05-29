@@ -18,12 +18,16 @@
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-not-found": "^3.2.81",
     "@oclif/plugin-version": "^2.2.42",
-    "@oclif/plugin-warn-if-update-available": "^3.1.61"
+    "@oclif/plugin-warn-if-update-available": "^3.1.61",
+    "ali-oss": "^6.23.0",
+    "cli-table3": "^0.6.5",
+    "fuse.js": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1",
     "@oclif/prettier-config": "^0.2.1",
     "@oclif/test": "^4",
+    "@types/ali-oss": "^6.23.3",
     "@types/chai": "^4",
     "@types/mocha": "^10",
     "@types/node": "^18",
@@ -68,6 +72,9 @@
     ],
     "topicSeparator": " ",
     "topics": {
+      "bkt": {
+        "description": "管理 OSS 存储空间"
+      },
       "config": {
         "description": "管理阿里云 CLI 配置"
       },
