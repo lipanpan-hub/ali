@@ -20,7 +20,7 @@ $ npm install -g @lppx/ali
 $ ali COMMAND
 running command...
 $ ali (--version)
-@lppx/ali/0.0.0 win32-x64 node-v24.14.1
+@lppx/ali/0.0.0 linux-x64 node-v22.22.3
 $ ali --help [COMMAND]
 USAGE
   $ ali COMMAND
