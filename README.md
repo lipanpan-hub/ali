@@ -29,61 +29,338 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`ali hello PERSON`](#ali-hello-person)
-* [`ali hello world`](#ali-hello-world)
+* [`ali autocomplete [SHELL]`](#ali-autocomplete-shell)
+* [`ali bkt add [NAME]`](#ali-bkt-add-name)
+* [`ali bkt del`](#ali-bkt-del)
+* [`ali bkt list`](#ali-bkt-list)
+* [`ali bkt ls`](#ali-bkt-ls)
+* [`ali bkt set`](#ali-bkt-set)
+* [`ali bkt upload`](#ali-bkt-upload)
+* [`ali config list`](#ali-config-list)
+* [`ali config ls`](#ali-config-ls)
+* [`ali config set`](#ali-config-set)
+* [`ali ecs add`](#ali-ecs-add)
+* [`ali ecs del [INSTANCEID]`](#ali-ecs-del-instanceid)
+* [`ali ecs list`](#ali-ecs-list)
+* [`ali ecs ls`](#ali-ecs-ls)
 * [`ali help [COMMAND]`](#ali-help-command)
-* [`ali plugins`](#ali-plugins)
-* [`ali plugins add PLUGIN`](#ali-plugins-add-plugin)
-* [`ali plugins:inspect PLUGIN...`](#ali-pluginsinspect-plugin)
-* [`ali plugins install PLUGIN`](#ali-plugins-install-plugin)
-* [`ali plugins link PATH`](#ali-plugins-link-path)
-* [`ali plugins remove [PLUGIN]`](#ali-plugins-remove-plugin)
-* [`ali plugins reset`](#ali-plugins-reset)
-* [`ali plugins uninstall [PLUGIN]`](#ali-plugins-uninstall-plugin)
-* [`ali plugins unlink [PLUGIN]`](#ali-plugins-unlink-plugin)
-* [`ali plugins update`](#ali-plugins-update)
+* [`ali img add [IMAGENAME] [INSTANCEID]`](#ali-img-add-imagename-instanceid)
+* [`ali img del [IMAGEID]`](#ali-img-del-imageid)
+* [`ali img list`](#ali-img-list)
+* [`ali img ls`](#ali-img-ls)
+* [`ali sgp add [SECURITYGROUPNAME] [VPCID]`](#ali-sgp-add-securitygroupname-vpcid)
+* [`ali sgp del [SECURITYGROUPID]`](#ali-sgp-del-securitygroupid)
+* [`ali sgp list`](#ali-sgp-list)
+* [`ali sgp ls`](#ali-sgp-ls)
+* [`ali version`](#ali-version)
+* [`ali vpc add [CIDRBLOCK] [VPCNAME]`](#ali-vpc-add-cidrblock-vpcname)
+* [`ali vpc del [VPCID]`](#ali-vpc-del-vpcid)
+* [`ali vpc list`](#ali-vpc-list)
+* [`ali vpc ls`](#ali-vpc-ls)
+* [`ali vsw add [CIDRBLOCK] [VPCID] [VSWITCHNAME] [ZONEID]`](#ali-vsw-add-cidrblock-vpcid-vswitchname-zoneid)
+* [`ali vsw del [VSWITCHID]`](#ali-vsw-del-vswitchid)
+* [`ali vsw list [VPCID]`](#ali-vsw-list-vpcid)
+* [`ali vsw ls [VPCID]`](#ali-vsw-ls-vpcid)
 
-## `ali hello PERSON`
+## `ali autocomplete [SHELL]`
 
-Say hello
+Display autocomplete installation instructions.
 
 ```
 USAGE
-  $ ali hello PERSON -f <value>
+  $ ali autocomplete [SHELL] [-r]
 
 ARGUMENTS
-  PERSON  Person to say hello to
+  [SHELL]  (zsh|bash|powershell) Shell type
 
 FLAGS
-  -f, --from=<value>  (required) Who is saying hello
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
 
 DESCRIPTION
-  Say hello
+  Display autocomplete installation instructions.
 
 EXAMPLES
-  $ ali hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  $ ali autocomplete
+
+  $ ali autocomplete bash
+
+  $ ali autocomplete zsh
+
+  $ ali autocomplete powershell
+
+  $ ali autocomplete --refresh-cache
 ```
 
-_See code: [src/commands/hello/index.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/hello/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.46/src/commands/autocomplete/index.ts)_
 
-## `ali hello world`
+## `ali bkt add [NAME]`
 
-Say hello world
+创建 OSS 存储空间
 
 ```
 USAGE
-  $ ali hello world
+  $ ali bkt add [NAME] [-r <value>]
+
+ARGUMENTS
+  [NAME]  存储桶名称
+
+FLAGS
+  -r, --region=<value>  区域ID (例如: cn-hangzhou)
 
 DESCRIPTION
-  Say hello world
+  创建 OSS 存储空间
 
 EXAMPLES
-  $ ali hello world
-  hello world! (./src/commands/hello/world.ts)
+  $ ali bkt add my-bucket -r cn-hangzhou
+
+  $ ali bkt add
 ```
 
-_See code: [src/commands/hello/world.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/hello/world.ts)_
+_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/add.ts)_
+
+## `ali bkt del`
+
+删除空的 OSS 存储空间（交互式选择）
+
+```
+USAGE
+  $ ali bkt del
+
+DESCRIPTION
+  删除空的 OSS 存储空间（交互式选择）
+
+EXAMPLES
+  $ ali bkt del
+```
+
+_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/del.ts)_
+
+## `ali bkt list`
+
+列出当前账号的所有 OSS 存储空间
+
+```
+USAGE
+  $ ali bkt list [-d]
+
+FLAGS
+  -d, --detail  交互式选择存储桶并显示详细信息
+
+DESCRIPTION
+  列出当前账号的所有 OSS 存储空间
+
+ALIASES
+  $ ali bkt ls
+
+EXAMPLES
+  $ ali bkt list
+
+  $ ali bkt list -d
+```
+
+_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/list.ts)_
+
+## `ali bkt ls`
+
+列出当前账号的所有 OSS 存储空间
+
+```
+USAGE
+  $ ali bkt ls [-d]
+
+FLAGS
+  -d, --detail  交互式选择存储桶并显示详细信息
+
+DESCRIPTION
+  列出当前账号的所有 OSS 存储空间
+
+ALIASES
+  $ ali bkt ls
+
+EXAMPLES
+  $ ali bkt ls
+
+  $ ali bkt ls -d
+```
+
+## `ali bkt set`
+
+交互式设置存储桶属性
+
+```
+USAGE
+  $ ali bkt set
+
+DESCRIPTION
+  交互式设置存储桶属性
+
+EXAMPLES
+  $ ali bkt set
+```
+
+_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/set.ts)_
+
+## `ali bkt upload`
+
+交互式选择文件并上传到 OSS 存储桶
+
+```
+USAGE
+  $ ali bkt upload
+
+DESCRIPTION
+  交互式选择文件并上传到 OSS 存储桶
+
+EXAMPLES
+  $ ali bkt upload
+```
+
+_See code: [src/commands/bkt/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/upload.ts)_
+
+## `ali config list`
+
+列出所有的配置
+
+```
+USAGE
+  $ ali config list
+
+DESCRIPTION
+  列出所有的配置
+
+ALIASES
+  $ ali config ls
+
+EXAMPLES
+  $ ali config list
+```
+
+_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/config/list.ts)_
+
+## `ali config ls`
+
+列出所有的配置
+
+```
+USAGE
+  $ ali config ls
+
+DESCRIPTION
+  列出所有的配置
+
+ALIASES
+  $ ali config ls
+
+EXAMPLES
+  $ ali config ls
+```
+
+## `ali config set`
+
+设置配置文件
+
+```
+USAGE
+  $ ali config set [-n <value>]
+
+FLAGS
+  -n, --name=<value>  配置文件名称
+
+DESCRIPTION
+  设置配置文件
+
+EXAMPLES
+  $ ali config set
+```
+
+_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/config/set.ts)_
+
+## `ali ecs add`
+
+创建 ECS 实例
+
+```
+USAGE
+  $ ali ecs add
+
+DESCRIPTION
+  创建 ECS 实例
+
+EXAMPLES
+  $ ali ecs add
+```
+
+_See code: [src/commands/ecs/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/add.ts)_
+
+## `ali ecs del [INSTANCEID]`
+
+删除 ECS 实例
+
+```
+USAGE
+  $ ali ecs del [INSTANCEID]
+
+ARGUMENTS
+  [INSTANCEID]  ECS 实例 ID (可选，不提供则交互式选择)
+
+DESCRIPTION
+  删除 ECS 实例
+
+EXAMPLES
+  $ ali ecs del
+
+  $ ali ecs del i-xxxxx
+```
+
+_See code: [src/commands/ecs/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/del.ts)_
+
+## `ali ecs list`
+
+列出当前区域的所有 ECS 实例
+
+```
+USAGE
+  $ ali ecs list [-b]
+
+FLAGS
+  -b, --block  使用块状显示模式
+
+DESCRIPTION
+  列出当前区域的所有 ECS 实例
+
+ALIASES
+  $ ali ecs ls
+
+EXAMPLES
+  $ ali ecs list
+
+  $ ali ecs list --block
+```
+
+_See code: [src/commands/ecs/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/list.ts)_
+
+## `ali ecs ls`
+
+列出当前区域的所有 ECS 实例
+
+```
+USAGE
+  $ ali ecs ls [-b]
+
+FLAGS
+  -b, --block  使用块状显示模式
+
+DESCRIPTION
+  列出当前区域的所有 ECS 实例
+
+ALIASES
+  $ ali ecs ls
+
+EXAMPLES
+  $ ali ecs ls
+
+  $ ali ecs ls --block
+```
 
 ## `ali help [COMMAND]`
 
@@ -105,293 +382,391 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/6.2.45/src/commands/help.ts)_
 
-## `ali plugins`
+## `ali img add [IMAGENAME] [INSTANCEID]`
 
-List installed plugins.
+创建自定义镜像
 
 ```
 USAGE
-  $ ali plugins [--json] [--core]
+  $ ali img add [IMAGENAME] [INSTANCEID]
+
+ARGUMENTS
+  [IMAGENAME]   镜像名称
+  [INSTANCEID]  ECS 实例 ID
+
+DESCRIPTION
+  创建自定义镜像
+
+EXAMPLES
+  $ ali img add
+
+  $ ali img add i-xxxxx my-image
+```
+
+_See code: [src/commands/img/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/add.ts)_
+
+## `ali img del [IMAGEID]`
+
+删除自定义镜像
+
+```
+USAGE
+  $ ali img del [IMAGEID]
+
+ARGUMENTS
+  [IMAGEID]  镜像 ID (可选，不提供则交互式选择)
+
+DESCRIPTION
+  删除自定义镜像
+
+EXAMPLES
+  $ ali img del
+
+  $ ali img del m-xxxxx
+```
+
+_See code: [src/commands/img/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/del.ts)_
+
+## `ali img list`
+
+列出指定平台的可用镜像
+
+```
+USAGE
+  $ ali img list [-p <value>]
 
 FLAGS
-  --core  Show core plugins.
+  -p, --platform=<value>  [default: Ubuntu] 操作系统平台名称
+
+DESCRIPTION
+  列出指定平台的可用镜像
+
+ALIASES
+  $ ali img ls
+
+EXAMPLES
+  $ ali img list
+
+  $ ali img list --platform Ubuntu
+
+  $ ali img list -p Debian
+```
+
+_See code: [src/commands/img/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/list.ts)_
+
+## `ali img ls`
+
+列出指定平台的可用镜像
+
+```
+USAGE
+  $ ali img ls [-p <value>]
+
+FLAGS
+  -p, --platform=<value>  [default: Ubuntu] 操作系统平台名称
+
+DESCRIPTION
+  列出指定平台的可用镜像
+
+ALIASES
+  $ ali img ls
+
+EXAMPLES
+  $ ali img ls
+
+  $ ali img ls --platform Ubuntu
+
+  $ ali img ls -p Debian
+```
+
+## `ali sgp add [SECURITYGROUPNAME] [VPCID]`
+
+创建安全组
+
+```
+USAGE
+  $ ali sgp add [SECURITYGROUPNAME] [VPCID]
+
+ARGUMENTS
+  [SECURITYGROUPNAME]  安全组名称
+  [VPCID]              VPC ID
+
+DESCRIPTION
+  创建安全组
+
+EXAMPLES
+  $ ali sgp add
+
+  $ ali sgp add vpc-xxxxx my-sg
+```
+
+_See code: [src/commands/sgp/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/add.ts)_
+
+## `ali sgp del [SECURITYGROUPID]`
+
+删除安全组
+
+```
+USAGE
+  $ ali sgp del [SECURITYGROUPID]
+
+ARGUMENTS
+  [SECURITYGROUPID]  安全组 ID (可选，不提供则交互式选择)
+
+DESCRIPTION
+  删除安全组
+
+EXAMPLES
+  $ ali sgp del
+
+  $ ali sgp del sg-xxxxx
+```
+
+_See code: [src/commands/sgp/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/del.ts)_
+
+## `ali sgp list`
+
+列出当前区域的所有安全组
+
+```
+USAGE
+  $ ali sgp list [-b]
+
+FLAGS
+  -b, --block  使用块状显示模式
+
+DESCRIPTION
+  列出当前区域的所有安全组
+
+ALIASES
+  $ ali sgp ls
+
+EXAMPLES
+  $ ali sgp list
+
+  $ ali sgp list --block
+```
+
+_See code: [src/commands/sgp/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/list.ts)_
+
+## `ali sgp ls`
+
+列出当前区域的所有安全组
+
+```
+USAGE
+  $ ali sgp ls [-b]
+
+FLAGS
+  -b, --block  使用块状显示模式
+
+DESCRIPTION
+  列出当前区域的所有安全组
+
+ALIASES
+  $ ali sgp ls
+
+EXAMPLES
+  $ ali sgp ls
+
+  $ ali sgp ls --block
+```
+
+## `ali version`
+
+```
+USAGE
+  $ ali version [--json] [--verbose]
+
+FLAGS
+  --verbose  Show additional information about the CLI.
 
 GLOBAL FLAGS
   --json  Format output as json.
 
-DESCRIPTION
-  List installed plugins.
+FLAG DESCRIPTIONS
+  --verbose  Show additional information about the CLI.
 
-EXAMPLES
-  $ ali plugins
+    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/2.2.42/src/commands/version.ts)_
 
-## `ali plugins add PLUGIN`
+## `ali vpc add [CIDRBLOCK] [VPCNAME]`
 
-Installs a plugin into ali.
+创建 VPC
 
 ```
 USAGE
-  $ ali plugins add PLUGIN... [--json] [-f] [-h] [-s | -v]
+  $ ali vpc add [CIDRBLOCK] [VPCNAME]
 
 ARGUMENTS
-  PLUGIN...  Plugin to install.
-
-FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
-  -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
-
-GLOBAL FLAGS
-  --json  Format output as json.
+  [CIDRBLOCK]  CIDR 块 (例如: 10.0.0.0/8)
+  [VPCNAME]    VPC 名称
 
 DESCRIPTION
-  Installs a plugin into ali.
+  创建 VPC
 
-  Uses npm to install plugins.
+EXAMPLES
+  $ ali vpc add
 
-  Installation of a user-installed plugin will override a core plugin.
+  $ ali vpc add 10.0.0.0/8 my-vpc
+```
 
-  Use the ALI_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the ALI_NPM_REGISTRY environment variable to set the npm registry.
+_See code: [src/commands/vpc/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/add.ts)_
+
+## `ali vpc del [VPCID]`
+
+删除 VPC
+
+```
+USAGE
+  $ ali vpc del [VPCID]
+
+ARGUMENTS
+  [VPCID]  VPC ID (可选，不提供则交互式选择)
+
+DESCRIPTION
+  删除 VPC
+
+EXAMPLES
+  $ ali vpc del
+
+  $ ali vpc del vpc-xxxxx
+```
+
+_See code: [src/commands/vpc/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/del.ts)_
+
+## `ali vpc list`
+
+列出当前区域的所有 VPC
+
+```
+USAGE
+  $ ali vpc list
+
+DESCRIPTION
+  列出当前区域的所有 VPC
 
 ALIASES
-  $ ali plugins add
+  $ ali vpc ls
 
 EXAMPLES
-  Install a plugin from npm registry.
-
-    $ ali plugins add myplugin
-
-  Install a plugin from a github url.
-
-    $ ali plugins add https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ ali plugins add someuser/someplugin
+  $ ali vpc list
 ```
 
-## `ali plugins:inspect PLUGIN...`
+_See code: [src/commands/vpc/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/list.ts)_
 
-Displays installation properties of a plugin.
+## `ali vpc ls`
+
+列出当前区域的所有 VPC
 
 ```
 USAGE
-  $ ali plugins inspect PLUGIN...
-
-ARGUMENTS
-  PLUGIN...  [default: .] Plugin to inspect.
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-GLOBAL FLAGS
-  --json  Format output as json.
+  $ ali vpc ls
 
 DESCRIPTION
-  Displays installation properties of a plugin.
-
-EXAMPLES
-  $ ali plugins inspect myplugin
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/inspect.ts)_
-
-## `ali plugins install PLUGIN`
-
-Installs a plugin into ali.
-
-```
-USAGE
-  $ ali plugins install PLUGIN... [--json] [-f] [-h] [-s | -v]
-
-ARGUMENTS
-  PLUGIN...  Plugin to install.
-
-FLAGS
-  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
-  -h, --help     Show CLI help.
-  -s, --silent   Silences npm output.
-  -v, --verbose  Show verbose npm output.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Installs a plugin into ali.
-
-  Uses npm to install plugins.
-
-  Installation of a user-installed plugin will override a core plugin.
-
-  Use the ALI_NPM_LOG_LEVEL environment variable to set the npm loglevel.
-  Use the ALI_NPM_REGISTRY environment variable to set the npm registry.
+  列出当前区域的所有 VPC
 
 ALIASES
-  $ ali plugins add
+  $ ali vpc ls
 
 EXAMPLES
-  Install a plugin from npm registry.
-
-    $ ali plugins install myplugin
-
-  Install a plugin from a github url.
-
-    $ ali plugins install https://github.com/someuser/someplugin
-
-  Install a plugin from a github slug.
-
-    $ ali plugins install someuser/someplugin
+  $ ali vpc ls
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/install.ts)_
+## `ali vsw add [CIDRBLOCK] [VPCID] [VSWITCHNAME] [ZONEID]`
 
-## `ali plugins link PATH`
-
-Links a plugin into the CLI for development.
+创建交换机
 
 ```
 USAGE
-  $ ali plugins link PATH [-h] [--install] [-v]
+  $ ali vsw add [CIDRBLOCK] [VPCID] [VSWITCHNAME] [ZONEID]
 
 ARGUMENTS
-  PATH  [default: .] path to plugin
-
-FLAGS
-  -h, --help          Show CLI help.
-  -v, --verbose
-      --[no-]install  Install dependencies after linking the plugin.
+  [CIDRBLOCK]    CIDR 块 (例如: 10.10.1.0/24)
+  [VPCID]        VPC ID
+  [VSWITCHNAME]  交换机名称
+  [ZONEID]       可用区 ID
 
 DESCRIPTION
-  Links a plugin into the CLI for development.
-
-  Installation of a linked plugin will override a user-installed or core plugin.
-
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
-  command will override the user-installed or core plugin implementation. This is useful for development work.
-
+  创建交换机
 
 EXAMPLES
-  $ ali plugins link myplugin
+  $ ali vsw add
+
+  $ ali vsw add vpc-xxxxx cn-shenzhen-a 10.10.1.0/24 my-vswitch
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/link.ts)_
+_See code: [src/commands/vsw/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/add.ts)_
 
-## `ali plugins remove [PLUGIN]`
+## `ali vsw del [VSWITCHID]`
 
-Removes a plugin from the CLI.
+删除交换机
 
 ```
 USAGE
-  $ ali plugins remove [PLUGIN...] [-h] [-v]
+  $ ali vsw del [VSWITCHID]
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
+  [VSWITCHID]  交换机 ID (可选，不提供则交互式选择)
 
 DESCRIPTION
-  Removes a plugin from the CLI.
+  删除交换机
+
+EXAMPLES
+  $ ali vsw del
+
+  $ ali vsw del vsw-xxxxx
+```
+
+_See code: [src/commands/vsw/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/del.ts)_
+
+## `ali vsw list [VPCID]`
+
+列出指定 VPC 下的所有交换机
+
+```
+USAGE
+  $ ali vsw list [VPCID]
+
+ARGUMENTS
+  [VPCID]  VPC ID (可选，不提供则交互式选择)
+
+DESCRIPTION
+  列出指定 VPC 下的所有交换机
 
 ALIASES
-  $ ali plugins unlink
-  $ ali plugins remove
+  $ ali vsw ls
 
 EXAMPLES
-  $ ali plugins remove myplugin
+  $ ali vsw list
+
+  $ ali vsw list vpc-xxxxx
 ```
 
-## `ali plugins reset`
+_See code: [src/commands/vsw/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/list.ts)_
 
-Remove all user-installed and linked plugins.
+## `ali vsw ls [VPCID]`
 
-```
-USAGE
-  $ ali plugins reset [--hard] [--reinstall]
-
-FLAGS
-  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
-  --reinstall  Reinstall all plugins after uninstalling.
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/reset.ts)_
-
-## `ali plugins uninstall [PLUGIN]`
-
-Removes a plugin from the CLI.
+列出指定 VPC 下的所有交换机
 
 ```
 USAGE
-  $ ali plugins uninstall [PLUGIN...] [-h] [-v]
+  $ ali vsw ls [VPCID]
 
 ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
+  [VPCID]  VPC ID (可选，不提供则交互式选择)
 
 DESCRIPTION
-  Removes a plugin from the CLI.
+  列出指定 VPC 下的所有交换机
 
 ALIASES
-  $ ali plugins unlink
-  $ ali plugins remove
+  $ ali vsw ls
 
 EXAMPLES
-  $ ali plugins uninstall myplugin
+  $ ali vsw ls
+
+  $ ali vsw ls vpc-xxxxx
 ```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/uninstall.ts)_
-
-## `ali plugins unlink [PLUGIN]`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ ali plugins unlink [PLUGIN...] [-h] [-v]
-
-ARGUMENTS
-  [PLUGIN...]  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ ali plugins unlink
-  $ ali plugins remove
-
-EXAMPLES
-  $ ali plugins unlink myplugin
-```
-
-## `ali plugins update`
-
-Update installed plugins.
-
-```
-USAGE
-  $ ali plugins update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Update installed plugins.
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/5.4.62/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
