@@ -20,7 +20,7 @@ $ npm install -g @lppx/ali
 $ ali COMMAND
 running command...
 $ ali (--version)
-@lppx/ali/0.0.0 linux-x64 node-v22.22.3
+@lppx/ali/0.0.1 win32-x64 node-v24.14.1
 $ ali --help [COMMAND]
 USAGE
   $ ali COMMAND
@@ -30,6 +30,14 @@ USAGE
 # Commands
 <!-- commands -->
 * [`ali autocomplete [SHELL]`](#ali-autocomplete-shell)
+* [`ali bill analyze [CYCLE]`](#ali-bill-analyze-cycle)
+* [`ali bill az [CYCLE]`](#ali-bill-az-cycle)
+* [`ali bill detail [CYCLE]`](#ali-bill-detail-cycle)
+* [`ali bill dl [CYCLE]`](#ali-bill-dl-cycle)
+* [`ali bill download [CYCLE]`](#ali-bill-download-cycle)
+* [`ali bill dt [CYCLE]`](#ali-bill-dt-cycle)
+* [`ali bill ov [CYCLE]`](#ali-bill-ov-cycle)
+* [`ali bill overview [CYCLE]`](#ali-bill-overview-cycle)
 * [`ali bkt add [NAME]`](#ali-bkt-add-name)
 * [`ali bkt del`](#ali-bkt-del)
 * [`ali bkt list`](#ali-bkt-list)
@@ -93,6 +101,210 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.46/src/commands/autocomplete/index.ts)_
 
+## `ali bill analyze [CYCLE]`
+
+分析指定账期的费用构成 (按产品占比与排名)
+
+```
+USAGE
+  $ ali bill analyze [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  分析指定账期的费用构成 (按产品占比与排名)
+
+ALIASES
+  $ ali bill az
+
+EXAMPLES
+  $ ali bill analyze
+
+  $ ali bill analyze 2025-04
+```
+
+_See code: [src/commands/bill/analyze.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bill/analyze.ts)_
+
+## `ali bill az [CYCLE]`
+
+分析指定账期的费用构成 (按产品占比与排名)
+
+```
+USAGE
+  $ ali bill az [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  分析指定账期的费用构成 (按产品占比与排名)
+
+ALIASES
+  $ ali bill az
+
+EXAMPLES
+  $ ali bill az
+
+  $ ali bill az 2025-04
+```
+
+## `ali bill detail [CYCLE]`
+
+展示指定账期的实例明细账单
+
+```
+USAGE
+  $ ali bill detail [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的实例明细账单
+
+ALIASES
+  $ ali bill dt
+
+EXAMPLES
+  $ ali bill detail
+
+  $ ali bill detail 2025-04
+```
+
+_See code: [src/commands/bill/detail.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bill/detail.ts)_
+
+## `ali bill dl [CYCLE]`
+
+下载指定账期的实例明细账单到当前目录
+
+```
+USAGE
+  $ ali bill dl [CYCLE] [-f csv|json]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+FLAGS
+  -f, --format=<option>  [default: csv] 导出格式
+                         <options: csv|json>
+
+DESCRIPTION
+  下载指定账期的实例明细账单到当前目录
+
+ALIASES
+  $ ali bill dl
+
+EXAMPLES
+  $ ali bill dl
+
+  $ ali bill dl 2025-04
+
+  $ ali bill dl 2025-04 -f json
+```
+
+## `ali bill download [CYCLE]`
+
+下载指定账期的实例明细账单到当前目录
+
+```
+USAGE
+  $ ali bill download [CYCLE] [-f csv|json]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+FLAGS
+  -f, --format=<option>  [default: csv] 导出格式
+                         <options: csv|json>
+
+DESCRIPTION
+  下载指定账期的实例明细账单到当前目录
+
+ALIASES
+  $ ali bill dl
+
+EXAMPLES
+  $ ali bill download
+
+  $ ali bill download 2025-04
+
+  $ ali bill download 2025-04 -f json
+```
+
+_See code: [src/commands/bill/download.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bill/download.ts)_
+
+## `ali bill dt [CYCLE]`
+
+展示指定账期的实例明细账单
+
+```
+USAGE
+  $ ali bill dt [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的实例明细账单
+
+ALIASES
+  $ ali bill dt
+
+EXAMPLES
+  $ ali bill dt
+
+  $ ali bill dt 2025-04
+```
+
+## `ali bill ov [CYCLE]`
+
+展示指定账期的账单总览 (按产品汇总)
+
+```
+USAGE
+  $ ali bill ov [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的账单总览 (按产品汇总)
+
+ALIASES
+  $ ali bill ov
+
+EXAMPLES
+  $ ali bill ov
+
+  $ ali bill ov 2025-04
+```
+
+## `ali bill overview [CYCLE]`
+
+展示指定账期的账单总览 (按产品汇总)
+
+```
+USAGE
+  $ ali bill overview [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的账单总览 (按产品汇总)
+
+ALIASES
+  $ ali bill ov
+
+EXAMPLES
+  $ ali bill overview
+
+  $ ali bill overview 2025-04
+```
+
+_See code: [src/commands/bill/overview.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bill/overview.ts)_
+
 ## `ali bkt add [NAME]`
 
 创建 OSS 存储空间
@@ -116,7 +328,7 @@ EXAMPLES
   $ ali bkt add
 ```
 
-_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/add.ts)_
+_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bkt/add.ts)_
 
 ## `ali bkt del`
 
@@ -133,7 +345,7 @@ EXAMPLES
   $ ali bkt del
 ```
 
-_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/del.ts)_
+_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bkt/del.ts)_
 
 ## `ali bkt list`
 
@@ -158,7 +370,7 @@ EXAMPLES
   $ ali bkt list -d
 ```
 
-_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/list.ts)_
+_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bkt/list.ts)_
 
 ## `ali bkt ls`
 
@@ -198,7 +410,7 @@ EXAMPLES
   $ ali bkt set
 ```
 
-_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/set.ts)_
+_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bkt/set.ts)_
 
 ## `ali bkt upload`
 
@@ -215,7 +427,7 @@ EXAMPLES
   $ ali bkt upload
 ```
 
-_See code: [src/commands/bkt/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/bkt/upload.ts)_
+_See code: [src/commands/bkt/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/bkt/upload.ts)_
 
 ## `ali config list`
 
@@ -235,7 +447,7 @@ EXAMPLES
   $ ali config list
 ```
 
-_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/config/list.ts)_
+_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/config/list.ts)_
 
 ## `ali config ls`
 
@@ -273,7 +485,7 @@ EXAMPLES
   $ ali config set
 ```
 
-_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/config/set.ts)_
+_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/config/set.ts)_
 
 ## `ali ecs add`
 
@@ -290,7 +502,7 @@ EXAMPLES
   $ ali ecs add
 ```
 
-_See code: [src/commands/ecs/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/add.ts)_
+_See code: [src/commands/ecs/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/ecs/add.ts)_
 
 ## `ali ecs del [INSTANCEID]`
 
@@ -312,7 +524,7 @@ EXAMPLES
   $ ali ecs del i-xxxxx
 ```
 
-_See code: [src/commands/ecs/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/del.ts)_
+_See code: [src/commands/ecs/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/ecs/del.ts)_
 
 ## `ali ecs list`
 
@@ -337,7 +549,7 @@ EXAMPLES
   $ ali ecs list --block
 ```
 
-_See code: [src/commands/ecs/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/ecs/list.ts)_
+_See code: [src/commands/ecs/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/ecs/list.ts)_
 
 ## `ali ecs ls`
 
@@ -403,7 +615,7 @@ EXAMPLES
   $ ali img add i-xxxxx my-image
 ```
 
-_See code: [src/commands/img/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/add.ts)_
+_See code: [src/commands/img/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/img/add.ts)_
 
 ## `ali img del [IMAGEID]`
 
@@ -425,7 +637,7 @@ EXAMPLES
   $ ali img del m-xxxxx
 ```
 
-_See code: [src/commands/img/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/del.ts)_
+_See code: [src/commands/img/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/img/del.ts)_
 
 ## `ali img list`
 
@@ -452,7 +664,7 @@ EXAMPLES
   $ ali img list -p Debian
 ```
 
-_See code: [src/commands/img/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/img/list.ts)_
+_See code: [src/commands/img/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/img/list.ts)_
 
 ## `ali img ls`
 
@@ -500,7 +712,7 @@ EXAMPLES
   $ ali sgp add vpc-xxxxx my-sg
 ```
 
-_See code: [src/commands/sgp/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/add.ts)_
+_See code: [src/commands/sgp/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/sgp/add.ts)_
 
 ## `ali sgp del [SECURITYGROUPID]`
 
@@ -522,7 +734,7 @@ EXAMPLES
   $ ali sgp del sg-xxxxx
 ```
 
-_See code: [src/commands/sgp/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/del.ts)_
+_See code: [src/commands/sgp/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/sgp/del.ts)_
 
 ## `ali sgp list`
 
@@ -547,7 +759,7 @@ EXAMPLES
   $ ali sgp list --block
 ```
 
-_See code: [src/commands/sgp/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/sgp/list.ts)_
+_See code: [src/commands/sgp/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/sgp/list.ts)_
 
 ## `ali sgp ls`
 
@@ -613,7 +825,7 @@ EXAMPLES
   $ ali vpc add 10.0.0.0/8 my-vpc
 ```
 
-_See code: [src/commands/vpc/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/add.ts)_
+_See code: [src/commands/vpc/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/add.ts)_
 
 ## `ali vpc del [VPCID]`
 
@@ -635,7 +847,7 @@ EXAMPLES
   $ ali vpc del vpc-xxxxx
 ```
 
-_See code: [src/commands/vpc/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/del.ts)_
+_See code: [src/commands/vpc/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/del.ts)_
 
 ## `ali vpc list`
 
@@ -655,7 +867,7 @@ EXAMPLES
   $ ali vpc list
 ```
 
-_See code: [src/commands/vpc/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vpc/list.ts)_
+_See code: [src/commands/vpc/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/list.ts)_
 
 ## `ali vpc ls`
 
@@ -698,7 +910,7 @@ EXAMPLES
   $ ali vsw add vpc-xxxxx cn-shenzhen-a 10.10.1.0/24 my-vswitch
 ```
 
-_See code: [src/commands/vsw/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/add.ts)_
+_See code: [src/commands/vsw/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vsw/add.ts)_
 
 ## `ali vsw del [VSWITCHID]`
 
@@ -720,7 +932,7 @@ EXAMPLES
   $ ali vsw del vsw-xxxxx
 ```
 
-_See code: [src/commands/vsw/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/del.ts)_
+_See code: [src/commands/vsw/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vsw/del.ts)_
 
 ## `ali vsw list [VPCID]`
 
@@ -745,7 +957,7 @@ EXAMPLES
   $ ali vsw list vpc-xxxxx
 ```
 
-_See code: [src/commands/vsw/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.0/src/commands/vsw/list.ts)_
+_See code: [src/commands/vsw/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vsw/list.ts)_
 
 ## `ali vsw ls [VPCID]`
 
