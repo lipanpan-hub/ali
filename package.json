@@ -8,6 +8,7 @@
   },
   "bugs": "https://github.com/lipanpan-hub/ali/issues",
   "dependencies": {
+    "@alicloud/bssopenapi20171214": "^4.1.1",
     "@alicloud/ecs20140526": "^7.7.5",
     "@alicloud/openapi-core": "^1.0.7",
     "@alicloud/tea-util": "^1.4.11",
@@ -75,6 +76,9 @@
     "topicSeparator": " ",
     "nsisCustomization": "nsis/nsis.nsi",
     "topics": {
+      "bill": {
+        "description": "查询和分析阿里云账单"
+      },
       "bkt": {
         "description": "管理 OSS 存储空间"
       },

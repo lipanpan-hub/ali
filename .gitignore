@@ -13,3 +13,7 @@ pnpm-lock.yaml
 
 CLAUDE.md   
 demo/*
+
+# 账单导出数据
+bill-*.json
+bill-*.csv
