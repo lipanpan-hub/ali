@@ -29,7 +29,7 @@ EXAMPLES
   $ ali img add i-xxxxx my-image
 ```
 
-_See code: [src/commands/img/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/img/add.ts)_
+_See code: [src/commands/img/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/img/add.ts)_
 
 ## `ali img del [IMAGEID]`
 
@@ -51,7 +51,7 @@ EXAMPLES
   $ ali img del m-xxxxx
 ```
 
-_See code: [src/commands/img/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/img/del.ts)_
+_See code: [src/commands/img/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/img/del.ts)_
 
 ## `ali img list`
 
@@ -78,7 +78,7 @@ EXAMPLES
   $ ali img list -p Debian
 ```
 
-_See code: [src/commands/img/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/img/list.ts)_
+_See code: [src/commands/img/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/img/list.ts)_
 
 ## `ali img ls`
 
