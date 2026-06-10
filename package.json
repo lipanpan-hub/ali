@@ -12,6 +12,7 @@
     "@alicloud/ecs20140526": "^7.7.5",
     "@alicloud/openapi-core": "^1.0.7",
     "@alicloud/tea-util": "^1.4.11",
+    "@alicloud/tingwu20230930": "^2.0.24",
     "@alicloud/vpc20160428": "^7.2.1",
     "@inquirer/prompts": "^7.10.1",
     "@oclif/core": "^4",
@@ -94,6 +95,12 @@
       "sgp": {
         "description": "管理安全组"
       },
+      "twu": {
+        "description": "管理通义听悟任务"
+      },
+      "twu task": {
+        "description": "管理通义听悟转写任务"
+      },
       "vpc": {
         "description": "管理 VPC"
       },
@@ -111,6 +118,7 @@
   "repository": "lipanpan-hub/ali",
   "scripts": {
     "build": "shx rm -rf dist tsconfig.tsbuildinfo && tsc -b",
+    "start": "node ./bin/run.js",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
