@@ -19,7 +19,11 @@
 
 # 安装方法
 
-## 通过 npm 全局安装(推荐)
+### 通过安装包安装
+
+也可以前往 GitHub 的 [Release 页面](https://github.com/lipanpan-hub/ali/releases) 下载对应平台的安装包(如 Windows 安装程序),直接安装即可使用,无需预先安装 Node.js 环境。
+
+### 通过 npm 全局安装
 
 ```bash
 npm install -g @lppx/ali
@@ -32,17 +36,13 @@ ali --version
 ali --help
 ```
 
-## 通过安装包安装
-
-也可以前往 GitHub 的 [Release 页面](https://github.com/lipanpan-hub/ali/releases) 下载对应平台的安装包(如 Windows 安装程序),直接安装即可使用,无需预先安装 Node.js 环境。
-
-## 环境要求
+### 环境要求
 
 - Node.js >= 18.0.0(仅 npm 安装方式需要)
 
 # 使用方法
 
-## 1. 配置访问凭证
+### 1. 配置访问凭证
 
 首次使用前,需要先配置阿里云的 AccessKey 与默认区域。运行以下命令进入交互式配置:
 
@@ -58,7 +58,7 @@ ali config set
 ali config list
 ```
 
-## 2. 使用命令
+### 2. 使用命令
 
 配置完成后即可使用各类命令,例如:
 
@@ -81,7 +81,7 @@ ali bkt list
 
 大多数支持删除、创建的命令都提供交互式选择,直接运行即可按提示操作。
 
-## 3. 查看帮助
+### 3. 查看帮助
 
 任何命令都可以追加 `--help` 查看详细用法:
 
