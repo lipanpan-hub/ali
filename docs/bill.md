@@ -35,7 +35,7 @@ EXAMPLES
   $ ali bill analyze 2025-04
 ```
 
-_See code: [src/commands/bill/analyze.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bill/analyze.ts)_
+_See code: [src/commands/bill/analyze.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/bill/analyze.ts)_
 
 ## `ali bill az [CYCLE]`
 
@@ -83,7 +83,7 @@ EXAMPLES
   $ ali bill detail 2025-04
 ```
 
-_See code: [src/commands/bill/detail.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bill/detail.ts)_
+_See code: [src/commands/bill/detail.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/bill/detail.ts)_
 
 ## `ali bill dl [CYCLE]`
 
@@ -143,7 +143,7 @@ EXAMPLES
   $ ali bill download 2025-04 -f json
 ```
 
-_See code: [src/commands/bill/download.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bill/download.ts)_
+_See code: [src/commands/bill/download.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/bill/download.ts)_
 
 ## `ali bill dt [CYCLE]`
 
@@ -214,4 +214,4 @@ EXAMPLES
   $ ali bill overview 2025-04
 ```
 
-_See code: [src/commands/bill/overview.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bill/overview.ts)_
+_See code: [src/commands/bill/overview.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/bill/overview.ts)_

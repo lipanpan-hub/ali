@@ -96,78 +96,18 @@ ali ecs list --help
 
 
 <!-- commands -->
-* [`ali autocomplete [SHELL]`](#ali-autocomplete-shell)
-* [`ali help [COMMAND]`](#ali-help-command)
-* [`ali version`](#ali-version)
+# Command Topics
 
-## `ali autocomplete [SHELL]`
+* [`ali autocomplete`](docs/autocomplete.md) - Display autocomplete installation instructions.
+* [`ali bill`](docs/bill.md) - 查询和分析阿里云账单
+* [`ali bkt`](docs/bkt.md) - 管理 OSS 存储空间
+* [`ali config`](docs/config.md) - 管理阿里云 CLI 配置
+* [`ali ecs`](docs/ecs.md) - 管理 ECS 实例
+* [`ali help`](docs/help.md) - Display help for ali.
+* [`ali img`](docs/img.md) - 管理镜像
+* [`ali sgp`](docs/sgp.md) - 管理安全组
+* [`ali version`](docs/version.md) - 查看项目的版本
+* [`ali vpc`](docs/vpc.md) - 管理 VPC
+* [`ali vsw`](docs/vsw.md) - 管理交换机
 
-Display autocomplete installation instructions.
-
-```
-USAGE
-  $ ali autocomplete [SHELL] [-r]
-
-ARGUMENTS
-  [SHELL]  (zsh|bash|powershell) Shell type
-
-FLAGS
-  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
-
-DESCRIPTION
-  Display autocomplete installation instructions.
-
-EXAMPLES
-  $ ali autocomplete
-
-  $ ali autocomplete bash
-
-  $ ali autocomplete zsh
-
-  $ ali autocomplete powershell
-
-  $ ali autocomplete --refresh-cache
-```
-
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.46/src/commands/autocomplete/index.ts)_
-
-## `ali help [COMMAND]`
-
-Display help for ali.
-
-```
-USAGE
-  $ ali help [COMMAND...] [-n]
-
-ARGUMENTS
-  [COMMAND...]  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for ali.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/6.2.45/src/commands/help.ts)_
-
-## `ali version`
-
-```
-USAGE
-  $ ali version [--json] [--verbose]
-
-FLAGS
-  --verbose  Show additional information about the CLI.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-FLAG DESCRIPTIONS
-  --verbose  Show additional information about the CLI.
-
-    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
-```
-
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/2.2.42/src/commands/version.ts)_
 <!-- commandsstop -->
