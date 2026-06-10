@@ -29,7 +29,7 @@ EXAMPLES
   $ ali vpc add 10.0.0.0/8 my-vpc
 ```
 
-_See code: [src/commands/vpc/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/add.ts)_
+_See code: [src/commands/vpc/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/vpc/add.ts)_
 
 ## `ali vpc del [VPCID]`
 
@@ -51,7 +51,7 @@ EXAMPLES
   $ ali vpc del vpc-xxxxx
 ```
 
-_See code: [src/commands/vpc/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/del.ts)_
+_See code: [src/commands/vpc/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/vpc/del.ts)_
 
 ## `ali vpc list`
 
@@ -71,7 +71,7 @@ EXAMPLES
   $ ali vpc list
 ```
 
-_See code: [src/commands/vpc/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.1/src/commands/vpc/list.ts)_
+_See code: [src/commands/vpc/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.3/src/commands/vpc/list.ts)_
 
 ## `ali vpc ls`
 
