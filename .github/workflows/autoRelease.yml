@@ -60,7 +60,7 @@ jobs:
           # 安装依赖
           npm install
           # 执行 oclif readme 命令自动生成/更新 README.md
-          npm exec oclif readme
+          npm exec oclif readme --multi
           # 检查是否有文件变更
           if [ -n "$(git status --porcelain)" ]; then
             # 如果 README.md 有更新，提交并推送到远程仓库

@@ -99,6 +99,9 @@
       },
       "vsw": {
         "description": "管理交换机"
+      },
+      "version": {
+        "description": "查看项目的版本"
       }
     },
     "hooks": {
