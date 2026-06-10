@@ -33,7 +33,7 @@ EXAMPLES
   $ ali bkt add
 ```
 
-_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/bkt/add.ts)_
+_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bkt/add.ts)_
 
 ## `ali bkt del`
 
@@ -50,7 +50,7 @@ EXAMPLES
   $ ali bkt del
 ```
 
-_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/bkt/del.ts)_
+_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bkt/del.ts)_
 
 ## `ali bkt list`
 
@@ -75,7 +75,7 @@ EXAMPLES
   $ ali bkt list -d
 ```
 
-_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/bkt/list.ts)_
+_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bkt/list.ts)_
 
 ## `ali bkt ls`
 
@@ -115,7 +115,7 @@ EXAMPLES
   $ ali bkt set
 ```
 
-_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/bkt/set.ts)_
+_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bkt/set.ts)_
 
 ## `ali bkt upload`
 
@@ -132,4 +132,4 @@ EXAMPLES
   $ ali bkt upload
 ```
 
-_See code: [src/commands/bkt/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.4/src/commands/bkt/upload.ts)_
+_See code: [src/commands/bkt/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.5/src/commands/bkt/upload.ts)_
