@@ -6,6 +6,7 @@ import {BktManager} from '../../lib/bkt/bkt.js'
 import {regionChoices} from '../../lib/utils/regions.js'
 
 export default class BktAdd extends Command {
+  static aliases = ['bkt:create']
   static args = {
     name: Args.string({description: '存储桶名称', required: false}),
   }

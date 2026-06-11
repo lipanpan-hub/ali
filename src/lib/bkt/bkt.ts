@@ -20,6 +20,19 @@ interface BucketInfo {
   storageClass: string
 }
 
+interface ObjectInfo {
+  lastModified: string
+  name: string
+  size: number
+  storageClass: string
+}
+
+interface ListObjectsResult {
+  isTruncated: boolean
+  nextContinuationToken: string
+  objects?: ObjectInfo[]
+}
+
 type ACLType = 'private' | 'public-read' | 'public-read-write'
 
 interface BucketProperty {
@@ -98,6 +111,78 @@ export class BktManager {
   }
   // #endregion
 
+  // #region 按名称查找存储桶
+  async getBucketByName(name: string): Promise<BucketInfo | null> {
+    const buckets = await this.getBuckets()
+    return buckets.find((b) => b.name === name) ?? null
+  }
+  // #endregion
+
+  // #region 创建桶级 OSS 客户端
+  private createBucketClient(bucket: BucketInfo) {
+    return new OSS({
+      accessKeyId: this.profile!.access_key_id,
+      accessKeySecret: this.profile!.access_key_secret,
+      bucket: bucket.name,
+      region: bucket.region,
+    })
+  }
+  // #endregion
+
+  // #region 获取对象列表（分页拉取全部）
+  async getObjects(bucket: BucketInfo): Promise<ObjectInfo[]> {
+    if (!this.profile) return []
+
+    const client = this.createBucketClient(bucket)
+    const all: ObjectInfo[] = []
+
+    await wrap('获取对象列表', async () => {
+      let token: null | string = null
+      do {
+        // eslint-disable-next-line no-await-in-loop
+        const res: ListObjectsResult = await client.listV2({'continuation-token': token, 'max-keys': 1000})
+        all.push(...(res.objects ?? []))
+        token = res.isTruncated ? res.nextContinuationToken : null
+      } while (token)
+    })
+
+    return all
+  }
+  // #endregion
+
+  // #region 列出对象
+  async listObjects(bucket: BucketInfo): Promise<void> {
+    const all = await this.getObjects(bucket)
+    if (all.length === 0) {
+      console.log(`存储桶 ${bucket.name} 中没有对象`)
+      return
+    }
+
+    const table = new Table({
+      head: ['名称', '大小', '最后修改', '存储类型'],
+    })
+
+    for (const o of all) {
+      table.push([o.name, this.formatSize(o.size), o.lastModified, o.storageClass])
+    }
+
+    console.log(table.toString())
+    console.log(`共 ${all.length} 个对象`)
+  }
+
+  private formatSize(bytes: number): string {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB']
+    let size = bytes
+    let i = 0
+    while (size >= 1024 && i < units.length - 1) {
+      size /= 1024
+      i++
+    }
+
+    return `${i === 0 ? size : size.toFixed(2)} ${units[i]}`
+  }
+  // #endregion
+
   // #region 创建存储桶
   async createBucket(bucketName: string, region: string): Promise<void> {
     if (!this.client || !this.profile) return
@@ -156,14 +241,17 @@ export class BktManager {
       },
     })
 
-    const table = new Table()
-    table.push(
-      {名称: selected.name},
-      {区域: selected.region},
-      {存储类型: selected.storageClass},
-      {创建时间: selected.creationDate},
-    )
-    console.log(table.toString())
+    const client = new OSS({
+      accessKeyId: this.profile!.access_key_id,
+      accessKeySecret: this.profile!.access_key_secret,
+      bucket: selected.name,
+      region: selected.region,
+    })
+
+    await wrap('获取存储桶详情', async () => {
+      const info = await client.getBucketInfo(selected.name)
+      console.dir(info.bucket, {depth: null})
+    })
   }
   // #endregion
 
@@ -255,13 +343,43 @@ export class BktManager {
     for (const file of selectedFiles) {
       const filePath = join(process.cwd(), file)
       // eslint-disable-next-line no-await-in-loop
-      await wrap(`上传 ${file}`, async () => {
-        await client.put(file, filePath)
-        console.log(`✓ ${file}`)
-      })
+      await wrap(`上传 ${file}`, () => this.uploadSingle(client, file, filePath))
     }
 
     console.log(`共上传 ${selectedFiles.length} 个文件到 ${bucket.name}`)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async uploadSingle(client: any, name: string, filePath: string): Promise<void> {
+    const MULTIPART_THRESHOLD = 100 * 1024 * 1024 // 超过 100MB 走分片上传
+    const size = statSync(filePath).size
+
+    // 小文件直接整体上传
+    if (size <= MULTIPART_THRESHOLD) {
+      await client.put(name, filePath)
+      console.log(`✓ ${name} (${this.formatSize(size)})`)
+      return
+    }
+
+    // 大文件分片上传, partSize 自适应以满足最多 10000 分片限制
+    const partSize = Math.max(1024 * 1024, Math.ceil(size / 10_000))
+    await client.multipartUpload(name, filePath, {
+      parallel: 4,
+      partSize,
+      progress: (p: number) => {
+        this.renderProgress(name, p)
+      },
+    })
+    this.renderProgress(name, 1)
+    process.stdout.write('\n')
+    console.log(`✓ ${name} (${this.formatSize(size)})`)
+  }
+
+  private renderProgress(name: string, percent: number): void {
+    const width = 30
+    const filled = Math.round(percent * width)
+    const bar = '█'.repeat(filled) + '░'.repeat(width - filled)
+    process.stdout.write(`\r  ${name} [${bar}] ${(percent * 100).toFixed(1)}%`)
   }
 
   private scanFiles(dir: string, base?: string): string[] {
@@ -367,6 +485,67 @@ export class BktManager {
         break
       }
     }
+  }
+  // #endregion
+
+  // #region 交互式选择对象
+  async selectObject(bucket: BucketInfo): Promise<null | ObjectInfo> {
+    const objects = await this.getObjects(bucket)
+    if (objects.length === 0) {
+      console.log(`存储桶 ${bucket.name} 中没有对象`)
+      return null
+    }
+
+    const fuse = new Fuse(objects, {keys: ['name'], threshold: 0.4})
+
+    return inquirer.search<ObjectInfo>({
+      message: '搜索并选择对象',
+      source: (term) => {
+        const results = term ? fuse.search(term).map((r) => r.item) : objects
+        return results.map((o) => ({
+          description: `${this.formatSize(o.size)} | ${o.lastModified}`,
+          name: o.name,
+          value: o,
+        }))
+      },
+    })
+  }
+  // #endregion
+
+  // #region 生成对象下载签名 URL
+  async signObjectUrl(bucket: BucketInfo, objectName: string, expires: number): Promise<void> {
+    if (!this.profile) return
+
+    const client = this.createBucketClient(bucket)
+
+    await wrap('生成签名 URL', async () => {
+      const url = client.signatureUrl(objectName, {expires})
+      console.log(`对象: ${objectName}`)
+      console.log(`有效期: ${expires} 秒`)
+      console.log(`下载地址: ${url}`)
+    })
+  }
+  // #endregion
+
+  // #region 生成对象上传签名 URL
+  async signUploadUrl(bucket: BucketInfo, objectName: string | undefined, expires: number): Promise<void> {
+    if (!this.profile) return
+
+    const name = objectName ?? (await inquirer.input({message: '请输入上传的对象名称（含路径）'}))
+    if (!name) {
+      console.log('未指定对象名称')
+      return
+    }
+
+    const client = this.createBucketClient(bucket)
+
+    await wrap('生成上传签名 URL', async () => {
+      const url = client.signatureUrl(name, {expires, method: 'PUT'})
+      console.log(`对象: ${name}`)
+      console.log(`有效期: ${expires} 秒`)
+      console.log(`上传地址: ${url}`)
+      console.log('提示: 使用 HTTP PUT 方法将文件内容上传到该地址')
+    })
   }
   // #endregion
 }

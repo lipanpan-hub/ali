@@ -10,6 +10,7 @@ interface BucketChoice {
 }
 
 export default class BktDel extends Command {
+  static aliases = ['bkt:rm']
   static description = '删除空的 OSS 存储空间（交互式选择）'
   static examples = ['<%= config.bin %> <%= command.id %>']
 
