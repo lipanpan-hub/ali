@@ -8,6 +8,7 @@ export default class TwuPhraseGet extends Command {
   static args = {
     phraseId: Args.string({description: '热词词表 ID (可选，不提供则交互式选择)', required: false}),
   }
+  static aliases = ['twu:pg']
   static description = '查询通义听悟热词词表内容 (--out 可导出为 JSON 文件)'
   static examples = [
     '<%= config.bin %> <%= command.id %>',

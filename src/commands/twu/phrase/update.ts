@@ -8,6 +8,7 @@ export default class TwuPhraseUpdate extends Command {
   static args = {
     phraseId: Args.string({description: '热词词表 ID (可选，不提供则交互式选择)', required: false}),
   }
+  static aliases = ['twu:pu']
   static description = '更新通义听悟热词词表 (默认增量编辑，--file 则从文件全覆盖导入)'
   static examples = [
     '<%= config.bin %> <%= command.id %>',

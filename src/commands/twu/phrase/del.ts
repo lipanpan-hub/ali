@@ -7,6 +7,7 @@ export default class TwuPhraseDel extends Command {
   static args = {
     phraseId: Args.string({description: '热词词表 ID (可选，不提供则交互式选择)', required: false}),
   }
+  static aliases = ['twu:pd']
   static description = '删除通义听悟热词词表'
   static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> a93b91141c0f422fa114af203f8b']
 

@@ -5,6 +5,7 @@ import {parsePhraseFile} from '../../../lib/twu/phraseFile.js'
 import {TingwuManager} from '../../../lib/twu/twu.js'
 
 export default class TwuPhraseAdd extends Command {
+  static aliases = ['twu:pa']
   static description = '创建通义听悟热词词表 (默认交互式，--file 则从文件导入)'
   static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --file phrases.json']
   static flags = {

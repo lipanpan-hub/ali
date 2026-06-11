@@ -13,6 +13,7 @@ const LANGUAGE_CHOICES = [
 ]
 
 export default class TwuTaskAdd extends Command {
+  static aliases = ['twu:ta']
   static description = '创建通义听悟离线语音转写任务'
   static examples = ['<%= config.bin %> <%= command.id %>']
 
