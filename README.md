@@ -106,6 +106,7 @@ ali ecs list --help
 * [`ali help`](docs/help.md) - Display help for ali.
 * [`ali img`](docs/img.md) - 管理镜像
 * [`ali sgp`](docs/sgp.md) - 管理安全组
+* [`ali twu`](docs/twu.md) - 管理通义听悟任务
 * [`ali version`](docs/version.md) - 查看项目的版本
 * [`ali vpc`](docs/vpc.md) - 管理 VPC
 * [`ali vsw`](docs/vsw.md) - 管理交换机

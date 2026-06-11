@@ -31,7 +31,7 @@ EXAMPLES
   $ ali vsw add vpc-xxxxx cn-shenzhen-a 10.10.1.0/24 my-vswitch
 ```
 
-_See code: [src/commands/vsw/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/vsw/add.ts)_
+_See code: [src/commands/vsw/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/vsw/add.ts)_
 
 ## `ali vsw del [VSWITCHID]`
 
@@ -53,7 +53,7 @@ EXAMPLES
   $ ali vsw del vsw-xxxxx
 ```
 
-_See code: [src/commands/vsw/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/vsw/del.ts)_
+_See code: [src/commands/vsw/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/vsw/del.ts)_
 
 ## `ali vsw list [VPCID]`
 
@@ -78,7 +78,7 @@ EXAMPLES
   $ ali vsw list vpc-xxxxx
 ```
 
-_See code: [src/commands/vsw/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.6/src/commands/vsw/list.ts)_
+_See code: [src/commands/vsw/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/vsw/list.ts)_
 
 ## `ali vsw ls [VPCID]`
 
