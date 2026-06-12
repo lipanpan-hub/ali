@@ -98,16 +98,34 @@ export class BktManager {
       return
     }
 
+    // 权限是桶级接口, 并发拉取每个桶的 ACL
+    const acls = await Promise.all(buckets.map((b) => this.getBucketACL(b)))
+
     const table = new Table({
-      head: ['名称', '区域', '存储类型'],
+      head: ['名称', '区域', '存储类型', '访问权限'],
     })
 
-    for (const b of buckets) {
-      table.push([b.name, b.region, b.storageClass])
+    for (const [i, b] of buckets.entries()) {
+      table.push([b.name, b.region, b.storageClass, acls[i]])
     }
 
     console.log(table.toString())
     console.log(`共 ${buckets.length} 个存储空间`)
+  }
+
+  private async getBucketACL(bucket: BucketInfo): Promise<string> {
+    const aclLabels: Record<string, string> = {
+      'private': '私有',
+      'public-read': '公共读',
+      'public-read-write': '公共读写',
+    }
+    try {
+      const client = this.createBucketClient(bucket)
+      const res = await client.getBucketACL(bucket.name)
+      return aclLabels[res.acl] ?? res.acl
+    } catch {
+      return '未知'
+    }
   }
   // #endregion
 
@@ -508,6 +526,35 @@ export class BktManager {
           value: o,
         }))
       },
+    })
+  }
+  // #endregion
+
+  // #region 显示对象详细信息
+  async showObject(bucket: BucketInfo, objectName: string): Promise<void> {
+    if (!this.profile) return
+
+    const client = this.createBucketClient(bucket)
+
+    await wrap('获取对象详情', async () => {
+      const result = await client.head(objectName)
+      const headers = result.res.headers as Record<string, string>
+
+      const table = new Table()
+      table.push(
+        {'对象名称': objectName},
+        {'HTTP 状态': result.status},
+        {'Content-Type': headers['content-type'] ?? '-'},
+        {'内容大小': headers['content-length'] ? this.formatSize(Number(headers['content-length'])) : '-'},
+        {'最后修改时间': headers['last-modified'] ?? '-'},
+        {'ETag': headers.etag ?? '-'},
+        {'存储类型': headers['x-oss-storage-class'] ?? '-'},
+        {'对象类型': headers['x-oss-object-type'] ?? '-'},
+        {'公共访问 URL': client.generateObjectUrl(objectName)},
+      )
+
+      console.log(table.toString())
+      console.log('提示: 公共访问 URL 仅在对象为 public-read 时可直接访问，私有对象请用 bkt:obj:sign 生成临时链接')
     })
   }
   // #endregion
