@@ -23,6 +23,7 @@
     "@oclif/plugin-warn-if-update-available": "^3.1.61",
     "ali-oss": "^6.23.0",
     "cli-table3": "^0.6.5",
+    "clipboardy": "^5.3.1",
     "fuse.js": "^7.3.0",
     "prompts": "^2.4.2"
   },

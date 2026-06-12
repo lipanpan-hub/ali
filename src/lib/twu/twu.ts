@@ -1,4 +1,5 @@
 import {CreateTaskRequest, CreateTranscriptionPhrasesRequest, UpdateTranscriptionPhrasesRequest} from '@alicloud/tingwu20230930'
+import clipboard from 'clipboardy'
 import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {join} from 'node:path'
@@ -112,6 +113,9 @@ export class TingwuManager {
     console.log(`任务ID: ${data.taskId}`)
     console.log(`任务标识: ${data.taskKey ?? '-'}`)
     console.log(`当前状态: ${data.taskStatus ?? '-'}`)
+
+    // 任务ID 写入剪贴板, 方便后续查询
+    await wrap('复制任务ID到剪贴板', async () => clipboard.write(data.taskId!))
   }
   // #endregion
 
