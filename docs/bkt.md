@@ -9,8 +9,10 @@
 * [`ali bkt del`](#ali-bkt-del)
 * [`ali bkt list`](#ali-bkt-list)
 * [`ali bkt ls`](#ali-bkt-ls)
+* [`ali bkt obj info [BUCKET] [OBJECT]`](#ali-bkt-obj-info-bucket-object)
 * [`ali bkt obj list [BUCKET]`](#ali-bkt-obj-list-bucket)
 * [`ali bkt obj ls [BUCKET]`](#ali-bkt-obj-ls-bucket)
+* [`ali bkt obj show [BUCKET] [OBJECT]`](#ali-bkt-obj-show-bucket-object)
 * [`ali bkt obj sign [BUCKET] [OBJECT]`](#ali-bkt-obj-sign-bucket-object)
 * [`ali bkt obj up`](#ali-bkt-obj-up)
 * [`ali bkt obj upload`](#ali-bkt-obj-upload)
@@ -46,7 +48,7 @@ EXAMPLES
   $ ali bkt add
 ```
 
-_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/add.ts)_
+_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/add.ts)_
 
 ## `ali bkt config`
 
@@ -110,7 +112,7 @@ EXAMPLES
   $ ali bkt del
 ```
 
-_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/del.ts)_
+_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/del.ts)_
 
 ## `ali bkt list`
 
@@ -135,7 +137,7 @@ EXAMPLES
   $ ali bkt list -d
 ```
 
-_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/list.ts)_
+_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/list.ts)_
 
 ## `ali bkt ls`
 
@@ -158,6 +160,30 @@ EXAMPLES
   $ ali bkt ls
 
   $ ali bkt ls -d
+```
+
+## `ali bkt obj info [BUCKET] [OBJECT]`
+
+显示 OSS 存储桶中对象的详细信息，未指定时交互式选择
+
+```
+USAGE
+  $ ali bkt obj info [BUCKET] [OBJECT]
+
+ARGUMENTS
+  [BUCKET]  存储桶名称
+  [OBJECT]  对象名称
+
+DESCRIPTION
+  显示 OSS 存储桶中对象的详细信息，未指定时交互式选择
+
+ALIASES
+  $ ali bkt obj info
+
+EXAMPLES
+  $ ali bkt obj info
+
+  $ ali bkt obj info my-bucket path/to/file.zip
 ```
 
 ## `ali bkt obj list [BUCKET]`
@@ -183,7 +209,7 @@ EXAMPLES
   $ ali bkt obj list my-bucket
 ```
 
-_See code: [src/commands/bkt/obj/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/obj/list.ts)_
+_See code: [src/commands/bkt/obj/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/list.ts)_
 
 ## `ali bkt obj ls [BUCKET]`
 
@@ -207,6 +233,32 @@ EXAMPLES
 
   $ ali bkt obj ls my-bucket
 ```
+
+## `ali bkt obj show [BUCKET] [OBJECT]`
+
+显示 OSS 存储桶中对象的详细信息，未指定时交互式选择
+
+```
+USAGE
+  $ ali bkt obj show [BUCKET] [OBJECT]
+
+ARGUMENTS
+  [BUCKET]  存储桶名称
+  [OBJECT]  对象名称
+
+DESCRIPTION
+  显示 OSS 存储桶中对象的详细信息，未指定时交互式选择
+
+ALIASES
+  $ ali bkt obj info
+
+EXAMPLES
+  $ ali bkt obj show
+
+  $ ali bkt obj show my-bucket path/to/file.zip
+```
+
+_See code: [src/commands/bkt/obj/show.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/show.ts)_
 
 ## `ali bkt obj sign [BUCKET] [OBJECT]`
 
@@ -237,7 +289,7 @@ EXAMPLES
   $ ali bkt obj sign my-bucket path/to/file.zip --expires 7200
 ```
 
-_See code: [src/commands/bkt/obj/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/obj/sign.ts)_
+_See code: [src/commands/bkt/obj/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/sign.ts)_
 
 ## `ali bkt obj up`
 
@@ -275,7 +327,7 @@ EXAMPLES
   $ ali bkt obj upload
 ```
 
-_See code: [src/commands/bkt/obj/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/obj/upload.ts)_
+_See code: [src/commands/bkt/obj/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/upload.ts)_
 
 ## `ali bkt obj url [BUCKET] [OBJECT]`
 
@@ -342,7 +394,7 @@ EXAMPLES
   $ ali bkt set
 ```
 
-_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/set.ts)_
+_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/set.ts)_
 
 ## `ali bkt sign [BUCKET] [OBJECT]`
 
@@ -373,7 +425,7 @@ EXAMPLES
   $ ali bkt sign my-bucket path/to/file.zip --expires 7200
 ```
 
-_See code: [src/commands/bkt/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/bkt/sign.ts)_
+_See code: [src/commands/bkt/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/sign.ts)_
 
 ## `ali bkt upload-url [BUCKET] [OBJECT]`
 

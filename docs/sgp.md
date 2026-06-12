@@ -29,7 +29,7 @@ EXAMPLES
   $ ali sgp add vpc-xxxxx my-sg
 ```
 
-_See code: [src/commands/sgp/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/sgp/add.ts)_
+_See code: [src/commands/sgp/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/sgp/add.ts)_
 
 ## `ali sgp del [SECURITYGROUPID]`
 
@@ -51,7 +51,7 @@ EXAMPLES
   $ ali sgp del sg-xxxxx
 ```
 
-_See code: [src/commands/sgp/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/sgp/del.ts)_
+_See code: [src/commands/sgp/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/sgp/del.ts)_
 
 ## `ali sgp list`
 
@@ -76,7 +76,7 @@ EXAMPLES
   $ ali sgp list --block
 ```
 
-_See code: [src/commands/sgp/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.7/src/commands/sgp/list.ts)_
+_See code: [src/commands/sgp/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/sgp/list.ts)_
 
 ## `ali sgp ls`
 
