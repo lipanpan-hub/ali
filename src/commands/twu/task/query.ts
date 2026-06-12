@@ -13,9 +13,11 @@ export default class TwuTaskQuery extends Command {
     '<%= config.bin %> <%= command.id %> c5394c6ee0fb474899d42215a3925c7e',
     '<%= config.bin %> <%= command.id %> c5394c6ee0fb474899d42215a3925c7e --download',
     '<%= config.bin %> <%= command.id %> c5394c6ee0fb474899d42215a3925c7e --watch --download',
+    '<%= config.bin %> <%= command.id %> c5394c6ee0fb474899d42215a3925c7e --vtt',
   ]
   static flags = {
     download: Flags.boolean({char: 'd', default: false, description: '任务完成时下载转写结果 JSON 到当前目录'}),
+    vtt: Flags.boolean({default: false, description: '轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件'}),
     watch: Flags.boolean({char: 'w', default: false, description: '轮询查询, 直到任务状态为完成或失败'}),
   }
 
@@ -32,6 +34,6 @@ export default class TwuTaskQuery extends Command {
       return
     }
 
-    await new TingwuManager().queryTask(taskId, flags.download, flags.watch)
+    await new TingwuManager().queryTask(taskId, flags.download, flags.watch, flags.vtt)
   }
 }

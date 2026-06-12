@@ -1,5 +1,5 @@
 import {CreateTaskRequest, CreateTranscriptionPhrasesRequest, UpdateTranscriptionPhrasesRequest} from '@alicloud/tingwu20230930'
-import {writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {join} from 'node:path'
 
@@ -42,6 +42,31 @@ export interface PhraseDetail {
   name: string
   wordWeights: Record<string, number>
 }
+
+// #region WebVTT 转换相关类型
+interface TranscriptionWord {
+  End: number
+  SentenceId: number
+  Start: number
+  Text: string
+}
+
+interface TranscriptionParagraph {
+  SpeakerId: number
+  Words?: TranscriptionWord[]
+}
+
+interface TranscriptionJson {
+  Transcription?: {Paragraphs?: TranscriptionParagraph[]}
+}
+
+interface VttCue {
+  end: number
+  speaker: number
+  start: number
+  words: TranscriptionWord[]
+}
+// #endregion
 
 function buildTaskKey(): string {
   return `task_${Date.now()}`
@@ -91,11 +116,14 @@ export class TingwuManager {
   // #endregion
 
   // #region 查询任务信息
-  async queryTask(taskId: string, download = false, poll = false): Promise<void> {
+  async queryTask(taskId: string, download = false, poll = false, vtt = false): Promise<void> {
     if (!this.client) return
 
-    // poll 为 true 时轮询直到任务结束(完成或失败), 否则只查询一次
-    const data = poll ? await this.pollTask(taskId) : await this.fetchTaskData(taskId)
+    // vtt 隐含 poll + download
+    const shouldPoll = poll || vtt
+    const shouldDownload = download || vtt
+
+    const data = shouldPoll ? await this.pollTask(taskId) : await this.fetchTaskData(taskId)
     if (!data) return
 
     console.log(`任务状态: ${data.taskStatus ?? '-'}`)
@@ -104,14 +132,19 @@ export class TingwuManager {
     const transcriptionUrl = data.result?.transcription
     console.log(transcriptionUrl ? `转写结果 URL: ${transcriptionUrl}` : '结果尚未就绪 (任务可能还在进行中)')
 
-    // 仅在任务完成且需要下载时, 拉取转写结果 JSON 到当前运行目录
-    if (download && transcriptionUrl) {
+    if (shouldDownload && transcriptionUrl) {
       if (data.taskStatus !== 'COMPLETED') {
         console.log('任务尚未完成, 跳过下载')
         return
       }
 
-      await this.downloadTranscription(transcriptionUrl, taskId)
+      const jsonPath = await this.downloadTranscription(transcriptionUrl, taskId)
+
+      // --vtt: 下载完成后自动转换为 WebVTT 字幕文件
+      if (vtt && jsonPath) {
+        const {cueCount, outputPath} = this.convertToWebVtt(jsonPath)
+        console.log(`WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
+      }
     }
   }
 
@@ -144,8 +177,8 @@ export class TingwuManager {
     }
   }
 
-  private async downloadTranscription(url: string, taskId: string): Promise<void> {
-    await wrap('下载转写结果', async () => {
+  private async downloadTranscription(url: string, taskId: string): Promise<null | string> {
+    return wrap('下载转写结果', async () => {
       const resp = await fetch(url)
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
 
@@ -153,8 +186,68 @@ export class TingwuManager {
       const filePath = join(process.cwd(), `${taskId}.json`)
       writeFileSync(filePath, text, 'utf8')
       console.log(`转写结果已保存到: ${filePath}`)
+      return filePath
     })
   }
+
+  // #region WebVTT 转换
+  private formatVttTimestamp(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000)
+    const millis = ms % 1000
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    const pad = (n: number, w = 2) => String(n).padStart(w, '0')
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(millis, 3)}`
+  }
+
+  private buildVttCues(paragraphs: TranscriptionParagraph[]): VttCue[] {
+    const cues: VttCue[] = []
+    let current: VttCue | null = null
+    let currentSentenceId: null | number = null
+
+    for (const paragraph of paragraphs) {
+      const speaker = paragraph.SpeakerId
+      for (const word of paragraph.Words ?? []) {
+        if (current && word.SentenceId === currentSentenceId) {
+          current.words.push(word)
+          current.end = word.End
+        } else {
+          if (current) cues.push(current)
+          current = {end: word.End, speaker, start: word.Start, words: [word]}
+          currentSentenceId = word.SentenceId
+        }
+      }
+    }
+
+    if (current) cues.push(current)
+    return cues
+  }
+
+  private renderWebVtt(cues: VttCue[]): string {
+    const blocks = cues.map((cue, index) => {
+      const time = `${this.formatVttTimestamp(cue.start)} --> ${this.formatVttTimestamp(cue.end)}`
+      const payload = cue.words.map((w) => `<${this.formatVttTimestamp(w.Start)}>${w.Text}`).join('')
+      return `${index + 1}\n${time}\n<v 说话人${cue.speaker}>${payload}`
+    })
+    return `WEBVTT\n\n${blocks.join('\n\n')}\n`
+  }
+
+  convertToWebVtt(inputPath: string, outputPath?: string): {cueCount: number; outputPath: string} {
+    if (!existsSync(inputPath)) throw new Error(`输入文件不存在: ${inputPath}`)
+
+    const data = JSON.parse(readFileSync(inputPath, 'utf8')) as TranscriptionJson
+    const paragraphs = data.Transcription?.Paragraphs ?? []
+    if (paragraphs.length === 0) throw new Error('JSON 中未找到 Transcription.Paragraphs 数据')
+
+    const cues = this.buildVttCues(paragraphs)
+    const vtt = this.renderWebVtt(cues)
+
+    const finalOutput = outputPath ?? inputPath.replace(/\.json$/i, '.vtt')
+    writeFileSync(finalOutput, vtt, 'utf8')
+    return {cueCount: cues.length, outputPath: finalOutput}
+  }
+  // #endregion
   // #endregion
 
   // #region 创建热词词表
