@@ -1,5 +1,7 @@
 import {CreateTaskRequest, CreateTranscriptionPhrasesRequest, UpdateTranscriptionPhrasesRequest} from '@alicloud/tingwu20230930'
+import {writeFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
+import {join} from 'node:path'
 
 import {createTingwuClient} from '../client/client.js'
 import {createRuntime} from '../client/runtime.js'
@@ -89,23 +91,69 @@ export class TingwuManager {
   // #endregion
 
   // #region 查询任务信息
-  async queryTask(taskId: string): Promise<void> {
+  async queryTask(taskId: string, download = false, poll = false): Promise<void> {
     if (!this.client) return
 
-    const res = await wrap('查询听悟任务', async () => this.client.getTaskInfo(taskId))
-    if (!res) return
-
-    const data = res.body?.data
-    if (!data) {
-      console.log(`查询失败: ${res.body?.message ?? '未知错误'}`)
-      return
-    }
+    // poll 为 true 时轮询直到任务结束(完成或失败), 否则只查询一次
+    const data = poll ? await this.pollTask(taskId) : await this.fetchTaskData(taskId)
+    if (!data) return
 
     console.log(`任务状态: ${data.taskStatus ?? '-'}`)
     if (data.errorCode) console.log(`错误信息: ${data.errorCode} - ${data.errorMessage ?? ''}`)
 
     const transcriptionUrl = data.result?.transcription
     console.log(transcriptionUrl ? `转写结果 URL: ${transcriptionUrl}` : '结果尚未就绪 (任务可能还在进行中)')
+
+    // 仅在任务完成且需要下载时, 拉取转写结果 JSON 到当前运行目录
+    if (download && transcriptionUrl) {
+      if (data.taskStatus !== 'COMPLETED') {
+        console.log('任务尚未完成, 跳过下载')
+        return
+      }
+
+      await this.downloadTranscription(transcriptionUrl, taskId)
+    }
+  }
+
+  // 查询一次任务信息, 返回 data 或 null
+  private async fetchTaskData(taskId: string) {
+    const res = await wrap('查询听悟任务', async () => this.client.getTaskInfo(taskId))
+    if (!res) return null
+
+    const data = res.body?.data
+    if (!data) {
+      console.log(`查询失败: ${res.body?.message ?? '未知错误'}`)
+      return null
+    }
+
+    return data
+  }
+
+  // 每 5 秒轮询一次, 直到任务状态为 COMPLETED 或 FAILED
+  private async pollTask(taskId: string) {
+    for (;;) {
+      const data = await this.fetchTaskData(taskId)
+      if (!data) return null
+
+      console.log(`当前状态: ${data.taskStatus ?? '-'}`)
+      if (data.taskStatus === 'COMPLETED' || data.taskStatus === 'FAILED') return data
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 5000)
+      })
+    }
+  }
+
+  private async downloadTranscription(url: string, taskId: string): Promise<void> {
+    await wrap('下载转写结果', async () => {
+      const resp = await fetch(url)
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+
+      const text = await resp.text()
+      const filePath = join(process.cwd(), `${taskId}.json`)
+      writeFileSync(filePath, text, 'utf8')
+      console.log(`转写结果已保存到: ${filePath}`)
+    })
   }
   // #endregion
 
