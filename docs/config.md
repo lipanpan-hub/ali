@@ -25,7 +25,7 @@ EXAMPLES
   $ ali config list
 ```
 
-_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/config/list.ts)_
+_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/config/list.ts)_
 
 ## `ali config ls`
 
@@ -63,4 +63,4 @@ EXAMPLES
   $ ali config set
 ```
 
-_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/config/set.ts)_
+_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/config/set.ts)_

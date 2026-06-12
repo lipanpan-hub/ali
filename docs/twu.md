@@ -115,7 +115,7 @@ EXAMPLES
   $ ali twu phrase add --file phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/phrase/add.ts)_
+_See code: [src/commands/twu/phrase/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/phrase/add.ts)_
 
 ## `ali twu phrase del [PHRASEID]`
 
@@ -140,7 +140,7 @@ EXAMPLES
   $ ali twu phrase del a93b91141c0f422fa114af203f8b
 ```
 
-_See code: [src/commands/twu/phrase/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/phrase/del.ts)_
+_See code: [src/commands/twu/phrase/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/phrase/del.ts)_
 
 ## `ali twu phrase get [PHRASEID]`
 
@@ -170,7 +170,7 @@ EXAMPLES
   $ ali twu phrase get a93b91141c0f422fa114af203f8b --out phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/get.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/phrase/get.ts)_
+_See code: [src/commands/twu/phrase/get.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/phrase/get.ts)_
 
 ## `ali twu phrase list`
 
@@ -190,7 +190,7 @@ EXAMPLES
   $ ali twu phrase list
 ```
 
-_See code: [src/commands/twu/phrase/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/phrase/list.ts)_
+_See code: [src/commands/twu/phrase/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/phrase/list.ts)_
 
 ## `ali twu phrase update [PHRASEID]`
 
@@ -220,7 +220,7 @@ EXAMPLES
   $ ali twu phrase update a93b91141c0f422fa114af203f8b --file phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/update.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/phrase/update.ts)_
+_See code: [src/commands/twu/phrase/update.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/phrase/update.ts)_
 
 ## `ali twu pl`
 
@@ -304,7 +304,7 @@ EXAMPLES
   $ ali twu task add
 ```
 
-_See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/task/add.ts)_
+_See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/task/add.ts)_
 
 ## `ali twu task query [TASKID]`
 
@@ -312,7 +312,7 @@ _See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/bl
 
 ```
 USAGE
-  $ ali twu task query [TASKID] [-d] [-w]
+  $ ali twu task query [TASKID] [-d] [--vtt] [-w]
 
 ARGUMENTS
   [TASKID]  听悟任务 ID
@@ -320,6 +320,7 @@ ARGUMENTS
 FLAGS
   -d, --download  任务完成时下载转写结果 JSON 到当前目录
   -w, --watch     轮询查询, 直到任务状态为完成或失败
+      --vtt       轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
 
 DESCRIPTION
   根据任务 ID 查询通义听悟转写任务信息
@@ -333,9 +334,11 @@ EXAMPLES
   $ ali twu task query c5394c6ee0fb474899d42215a3925c7e --download
 
   $ ali twu task query c5394c6ee0fb474899d42215a3925c7e --watch --download
+
+  $ ali twu task query c5394c6ee0fb474899d42215a3925c7e --vtt
 ```
 
-_See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/twu/task/query.ts)_
+_See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/twu/task/query.ts)_
 
 ## `ali twu tq [TASKID]`
 
@@ -343,7 +346,7 @@ _See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/
 
 ```
 USAGE
-  $ ali twu tq [TASKID] [-d] [-w]
+  $ ali twu tq [TASKID] [-d] [--vtt] [-w]
 
 ARGUMENTS
   [TASKID]  听悟任务 ID
@@ -351,6 +354,7 @@ ARGUMENTS
 FLAGS
   -d, --download  任务完成时下载转写结果 JSON 到当前目录
   -w, --watch     轮询查询, 直到任务状态为完成或失败
+      --vtt       轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
 
 DESCRIPTION
   根据任务 ID 查询通义听悟转写任务信息
@@ -364,4 +368,6 @@ EXAMPLES
   $ ali twu tq c5394c6ee0fb474899d42215a3925c7e --download
 
   $ ali twu tq c5394c6ee0fb474899d42215a3925c7e --watch --download
+
+  $ ali twu tq c5394c6ee0fb474899d42215a3925c7e --vtt
 ```

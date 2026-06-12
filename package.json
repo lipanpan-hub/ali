@@ -1,7 +1,7 @@
 {
   "name": "@lppx/ali",
   "description": "aliyun cli tool",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "lppx",
   "bin": {
     "ali": "./bin/run.js"

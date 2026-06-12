@@ -23,7 +23,7 @@ EXAMPLES
   $ ali ecs add
 ```
 
-_See code: [src/commands/ecs/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/ecs/add.ts)_
+_See code: [src/commands/ecs/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/ecs/add.ts)_
 
 ## `ali ecs del [INSTANCEID]`
 
@@ -45,7 +45,7 @@ EXAMPLES
   $ ali ecs del i-xxxxx
 ```
 
-_See code: [src/commands/ecs/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/ecs/del.ts)_
+_See code: [src/commands/ecs/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/ecs/del.ts)_
 
 ## `ali ecs list`
 
@@ -70,7 +70,7 @@ EXAMPLES
   $ ali ecs list --block
 ```
 
-_See code: [src/commands/ecs/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/ecs/list.ts)_
+_See code: [src/commands/ecs/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/ecs/list.ts)_
 
 ## `ali ecs ls`
 

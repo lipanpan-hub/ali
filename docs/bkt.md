@@ -48,7 +48,7 @@ EXAMPLES
   $ ali bkt add
 ```
 
-_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/add.ts)_
+_See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/add.ts)_
 
 ## `ali bkt config`
 
@@ -112,7 +112,7 @@ EXAMPLES
   $ ali bkt del
 ```
 
-_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/del.ts)_
+_See code: [src/commands/bkt/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/del.ts)_
 
 ## `ali bkt list`
 
@@ -137,7 +137,7 @@ EXAMPLES
   $ ali bkt list -d
 ```
 
-_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/list.ts)_
+_See code: [src/commands/bkt/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/list.ts)_
 
 ## `ali bkt ls`
 
@@ -209,7 +209,7 @@ EXAMPLES
   $ ali bkt obj list my-bucket
 ```
 
-_See code: [src/commands/bkt/obj/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/list.ts)_
+_See code: [src/commands/bkt/obj/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/obj/list.ts)_
 
 ## `ali bkt obj ls [BUCKET]`
 
@@ -258,7 +258,7 @@ EXAMPLES
   $ ali bkt obj show my-bucket path/to/file.zip
 ```
 
-_See code: [src/commands/bkt/obj/show.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/show.ts)_
+_See code: [src/commands/bkt/obj/show.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/obj/show.ts)_
 
 ## `ali bkt obj sign [BUCKET] [OBJECT]`
 
@@ -289,7 +289,7 @@ EXAMPLES
   $ ali bkt obj sign my-bucket path/to/file.zip --expires 7200
 ```
 
-_See code: [src/commands/bkt/obj/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/sign.ts)_
+_See code: [src/commands/bkt/obj/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/obj/sign.ts)_
 
 ## `ali bkt obj up`
 
@@ -327,7 +327,7 @@ EXAMPLES
   $ ali bkt obj upload
 ```
 
-_See code: [src/commands/bkt/obj/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/obj/upload.ts)_
+_See code: [src/commands/bkt/obj/upload.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/obj/upload.ts)_
 
 ## `ali bkt obj url [BUCKET] [OBJECT]`
 
@@ -394,7 +394,7 @@ EXAMPLES
   $ ali bkt set
 ```
 
-_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/set.ts)_
+_See code: [src/commands/bkt/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/set.ts)_
 
 ## `ali bkt sign [BUCKET] [OBJECT]`
 
@@ -425,7 +425,7 @@ EXAMPLES
   $ ali bkt sign my-bucket path/to/file.zip --expires 7200
 ```
 
-_See code: [src/commands/bkt/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.8/src/commands/bkt/sign.ts)_
+_See code: [src/commands/bkt/sign.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/bkt/sign.ts)_
 
 ## `ali bkt upload-url [BUCKET] [OBJECT]`
 
