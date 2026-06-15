@@ -6,6 +6,7 @@
 * [`ali config list`](#ali-config-list)
 * [`ali config ls`](#ali-config-ls)
 * [`ali config set`](#ali-config-set)
+* [`ali config show`](#ali-config-show)
 
 ## `ali config list`
 
@@ -20,12 +21,13 @@ DESCRIPTION
 
 ALIASES
   $ ali config ls
+  $ ali config show
 
 EXAMPLES
   $ ali config list
 ```
 
-_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/config/list.ts)_
+_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/config/list.ts)_
 
 ## `ali config ls`
 
@@ -40,6 +42,7 @@ DESCRIPTION
 
 ALIASES
   $ ali config ls
+  $ ali config show
 
 EXAMPLES
   $ ali config ls
@@ -63,4 +66,23 @@ EXAMPLES
   $ ali config set
 ```
 
-_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.9/src/commands/config/set.ts)_
+_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/config/set.ts)_
+
+## `ali config show`
+
+列出所有的配置
+
+```
+USAGE
+  $ ali config show
+
+DESCRIPTION
+  列出所有的配置
+
+ALIASES
+  $ ali config ls
+  $ ali config show
+
+EXAMPLES
+  $ ali config show
+```
