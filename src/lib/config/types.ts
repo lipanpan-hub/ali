@@ -8,6 +8,7 @@ export interface Profile {
   output_format: string
   region_id: string
   site: string
+  tingwu_app_keys?: string[]
 }
 
 export interface Config {

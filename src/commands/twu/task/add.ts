@@ -1,6 +1,8 @@
 import * as inquirer from '@inquirer/prompts'
 import {Command} from '@oclif/core'
+import Fuse from 'fuse.js'
 
+import {ConfigManager} from '../../../lib/config/config.js'
 import {TingwuManager} from '../../../lib/twu/twu.js'
 
 const LANGUAGE_CHOICES = [
@@ -18,13 +20,46 @@ export default class TwuTaskAdd extends Command {
   static examples = ['<%= config.bin %> <%= command.id %>']
 
   public async run(): Promise<void> {
-    // #region 采集任务参数
-    const appKey = (await inquirer.input({message: '请输入听悟项目 AppKey:'})).trim()
+    // #region 采集 AppKey
+    const configManager = new ConfigManager()
+    const appKeys = configManager.getCurrentProfile()?.tingwu_app_keys ?? []
+
+    let appKey: string
+    if (appKeys.length > 0) {
+      // 存在历史 AppKey, 用 fuse 模糊搜索选择, 也允许直接输入新值
+      const fuse = new Fuse(appKeys, {threshold: 0.4})
+      appKey = await inquirer.search({
+        message: '请选择或输入听悟项目 AppKey:',
+        source: (term) => {
+          const keyword = term?.trim() ?? ''
+          const matched = keyword ? fuse.search(keyword).map((r) => r.item) : appKeys
+          const choices = matched.map((k) => ({name: k, value: k}))
+          // 输入的关键字不在历史列表中时, 提供"使用新值"选项
+          if (keyword && !appKeys.includes(keyword)) choices.unshift({name: `使用新 AppKey: ${keyword}`, value: keyword})
+          return choices
+        },
+      })
+    } else {
+      appKey = await inquirer.input({message: '请输入听悟项目 AppKey:'})
+    }
+
+    appKey = appKey.trim()
     if (!appKey) {
       this.log('AppKey 不能为空')
       return
     }
 
+    // 最终使用的 AppKey 不在配置中时, 询问是否保存
+    if (!appKeys.includes(appKey)) {
+      const save = await inquirer.confirm({default: true, message: '该 AppKey 不在配置中, 是否保存到配置文件?'})
+      if (save) {
+        const ok = configManager.updateCurrentProfile({tingwu_app_keys: [...appKeys, appKey]}) // eslint-disable-line camelcase
+        this.log(ok ? 'AppKey 已保存到配置' : '当前无可用配置, AppKey 未保存')
+      }
+    }
+    // #endregion
+
+    // #region 采集任务参数
     const fileUrl = (await inquirer.input({message: '请输入音视频文件 URL:'})).trim()
     if (!fileUrl) {
       this.log('文件 URL 不能为空')

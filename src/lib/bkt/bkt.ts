@@ -1,6 +1,6 @@
-import {readdirSync, statSync} from 'node:fs'
+import {existsSync, readdirSync, statSync} from 'node:fs'
 import {createRequire} from 'node:module'
-import {join} from 'node:path'
+import {basename, join, resolve} from 'node:path'
 
 import * as inquirer from '@inquirer/prompts'
 import Table from 'cli-table3'
@@ -316,17 +316,67 @@ export class BktManager {
   // #endregion
 
   // #region 上传文件
-  async uploadFiles(): Promise<void> {
+  async uploadFiles(filePaths?: string[], bucketName?: string): Promise<void> {
     if (!this.client || !this.profile) return
 
-    // 扫描当前目录文件
-    const files = this.scanFiles(process.cwd())
-    if (files.length === 0) {
-      console.log('当前目录下没有文件')
+    // 收集待上传文件: 手动指定优先, 否则扫描当前目录交互式选择
+    const uploads = filePaths && filePaths.length > 0 ? this.resolveFiles(filePaths) : await this.pickFiles()
+    if (uploads.length === 0) return
+
+    // 指定桶名则直接查找, 否则交互式选择
+    const bucket = bucketName ? await this.getBucketByName(bucketName) : await this.selectBucket()
+    if (!bucket) {
+      if (bucketName) console.log(`未找到存储桶 ${bucketName}`)
       return
     }
 
-    // 交互式模糊搜索多选文件
+    const client = new OSS({
+      accessKeyId: this.profile.access_key_id,
+      accessKeySecret: this.profile.access_key_secret,
+      bucket: bucket.name,
+      region: bucket.region,
+    })
+
+    for (const {filePath, name} of uploads) {
+      // eslint-disable-next-line no-await-in-loop
+      await wrap(`上传 ${name}`, () => this.uploadSingle(client, name, filePath))
+    }
+
+    console.log(`共上传 ${uploads.length} 个文件到 ${bucket.name}`)
+
+    // 上传完成后逐行展示各文件的签名 URL, 默认有效期 1 小时
+    const expires = 3600
+    console.log(`\n签名 URL (有效期 ${expires} 秒):`)
+    for (const {name} of uploads) {
+      console.log(`  ${name}`)
+      console.log(`  ${client.signatureUrl(name, {expires})}\n`)
+    }
+  }
+
+  // 解析手动指定的文件路径, 对象名取文件名, 过滤不存在或非文件的路径
+  private resolveFiles(filePaths: string[]): Array<{filePath: string; name: string}> {
+    const uploads: Array<{filePath: string; name: string}> = []
+    for (const p of filePaths) {
+      const filePath = resolve(p)
+      if (!existsSync(filePath) || !statSync(filePath).isFile()) {
+        console.log(`跳过: ${p} 不存在或不是文件`)
+        continue
+      }
+
+      uploads.push({filePath, name: basename(filePath)})
+    }
+
+    return uploads
+  }
+
+  // 扫描当前目录并交互式模糊搜索多选, 对象名取相对路径
+  private async pickFiles(): Promise<Array<{filePath: string; name: string}>> {
+    const files = this.scanFiles(process.cwd())
+    if (files.length === 0) {
+      console.log('当前目录下没有文件')
+      return []
+    }
+
     const choices = files.map((f) => ({title: f, value: f}))
     const fuse = new Fuse(choices, {keys: ['title'], threshold: 0.4})
 
@@ -343,28 +393,10 @@ export class BktManager {
 
     if (!selectedFiles || selectedFiles.length === 0) {
       console.log('未选择任何文件')
-      return
+      return []
     }
 
-    // 交互式选择存储桶
-    const bucket = await this.selectBucket()
-    if (!bucket) return
-
-    // 上传文件
-    const client = new OSS({
-      accessKeyId: this.profile.access_key_id,
-      accessKeySecret: this.profile.access_key_secret,
-      bucket: bucket.name,
-      region: bucket.region,
-    })
-
-    for (const file of selectedFiles) {
-      const filePath = join(process.cwd(), file)
-      // eslint-disable-next-line no-await-in-loop
-      await wrap(`上传 ${file}`, () => this.uploadSingle(client, file, filePath))
-    }
-
-    console.log(`共上传 ${selectedFiles.length} 个文件到 ${bucket.name}`)
+    return (selectedFiles as string[]).map((f) => ({filePath: join(process.cwd(), f), name: f}))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

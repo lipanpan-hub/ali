@@ -3,7 +3,7 @@ import {Command} from '@oclif/core'
 import {ConfigManager} from '../../lib/config/config.js'
 
 export default class ConfigLs extends Command {
-  static aliases = ['config:ls']
+  static aliases = ['config:ls', 'config:show']
 static description = '列出所有的配置'
 static examples = ['<%= config.bin %> <%= command.id %>']
 
