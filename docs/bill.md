@@ -9,6 +9,8 @@
 * [`ali bill dl [CYCLE]`](#ali-bill-dl-cycle)
 * [`ali bill download [CYCLE]`](#ali-bill-download-cycle)
 * [`ali bill dt [CYCLE]`](#ali-bill-dt-cycle)
+* [`ali bill ov [CYCLE]`](#ali-bill-ov-cycle)
+* [`ali bill overview [CYCLE]`](#ali-bill-overview-cycle)
 
 ## `ali bill analyze [CYCLE]`
 
@@ -165,3 +167,51 @@ EXAMPLES
 
   $ ali bill dt 2025-04
 ```
+
+## `ali bill ov [CYCLE]`
+
+展示指定账期的账单总览 (按产品汇总)
+
+```
+USAGE
+  $ ali bill ov [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的账单总览 (按产品汇总)
+
+ALIASES
+  $ ali bill ov
+
+EXAMPLES
+  $ ali bill ov
+
+  $ ali bill ov 2025-04
+```
+
+## `ali bill overview [CYCLE]`
+
+展示指定账期的账单总览 (按产品汇总)
+
+```
+USAGE
+  $ ali bill overview [CYCLE]
+
+ARGUMENTS
+  [CYCLE]  账期 YYYY-MM (默认上个月)
+
+DESCRIPTION
+  展示指定账期的账单总览 (按产品汇总)
+
+ALIASES
+  $ ali bill ov
+
+EXAMPLES
+  $ ali bill overview
+
+  $ ali bill overview 2025-04
+```
+
+_See code: [src/commands/bill/overview.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/bill/overview.ts)_
