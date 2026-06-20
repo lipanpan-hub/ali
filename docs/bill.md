@@ -9,8 +9,6 @@
 * [`ali bill dl [CYCLE]`](#ali-bill-dl-cycle)
 * [`ali bill download [CYCLE]`](#ali-bill-download-cycle)
 * [`ali bill dt [CYCLE]`](#ali-bill-dt-cycle)
-* [`ali bill ov [CYCLE]`](#ali-bill-ov-cycle)
-* [`ali bill overview [CYCLE]`](#ali-bill-overview-cycle)
 
 ## `ali bill analyze [CYCLE]`
 
@@ -35,7 +33,7 @@ EXAMPLES
   $ ali bill analyze 2025-04
 ```
 
-_See code: [src/commands/bill/analyze.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/bill/analyze.ts)_
+_See code: [src/commands/bill/analyze.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/bill/analyze.ts)_
 
 ## `ali bill az [CYCLE]`
 
@@ -83,7 +81,7 @@ EXAMPLES
   $ ali bill detail 2025-04
 ```
 
-_See code: [src/commands/bill/detail.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/bill/detail.ts)_
+_See code: [src/commands/bill/detail.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/bill/detail.ts)_
 
 ## `ali bill dl [CYCLE]`
 
@@ -143,7 +141,7 @@ EXAMPLES
   $ ali bill download 2025-04 -f json
 ```
 
-_See code: [src/commands/bill/download.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/bill/download.ts)_
+_See code: [src/commands/bill/download.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/bill/download.ts)_
 
 ## `ali bill dt [CYCLE]`
 
@@ -167,51 +165,3 @@ EXAMPLES
 
   $ ali bill dt 2025-04
 ```
-
-## `ali bill ov [CYCLE]`
-
-展示指定账期的账单总览 (按产品汇总)
-
-```
-USAGE
-  $ ali bill ov [CYCLE]
-
-ARGUMENTS
-  [CYCLE]  账期 YYYY-MM (默认上个月)
-
-DESCRIPTION
-  展示指定账期的账单总览 (按产品汇总)
-
-ALIASES
-  $ ali bill ov
-
-EXAMPLES
-  $ ali bill ov
-
-  $ ali bill ov 2025-04
-```
-
-## `ali bill overview [CYCLE]`
-
-展示指定账期的账单总览 (按产品汇总)
-
-```
-USAGE
-  $ ali bill overview [CYCLE]
-
-ARGUMENTS
-  [CYCLE]  账期 YYYY-MM (默认上个月)
-
-DESCRIPTION
-  展示指定账期的账单总览 (按产品汇总)
-
-ALIASES
-  $ ali bill ov
-
-EXAMPLES
-  $ ali bill overview
-
-  $ ali bill overview 2025-04
-```
-
-_See code: [src/commands/bill/overview.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.10/src/commands/bill/overview.ts)_

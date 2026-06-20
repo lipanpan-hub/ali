@@ -100,15 +100,7 @@ ali ecs list --help
 
 * [`ali autocomplete`](docs/autocomplete.md) - Display autocomplete installation instructions.
 * [`ali bill`](docs/bill.md) - 查询和分析阿里云账单
-* [`ali bkt`](docs/bkt.md) - 管理 OSS 存储空间
-* [`ali config`](docs/config.md) - 管理阿里云 CLI 配置
-* [`ali ecs`](docs/ecs.md) - 管理 ECS 实例
 * [`ali help`](docs/help.md) - Display help for ali.
-* [`ali img`](docs/img.md) - 管理镜像
-* [`ali sgp`](docs/sgp.md) - 管理安全组
-* [`ali twu`](docs/twu.md) - 管理通义听悟任务
 * [`ali version`](docs/version.md) - 查看项目的版本
-* [`ali vpc`](docs/vpc.md) - 管理 VPC
-* [`ali vsw`](docs/vsw.md) - 管理交换机
 
 <!-- commandsstop -->
