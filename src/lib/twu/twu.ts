@@ -120,12 +120,12 @@ export class TingwuManager {
   // #endregion
 
   // #region 查询任务信息
-  async queryTask(taskId: string, download = false, poll = false, vtt = false): Promise<void> {
+  async queryTask(taskId: string, download = false, poll = false, vtt = false, paragraph = false): Promise<void> {
     if (!this.client) return
 
-    // vtt 隐含 poll + download
-    const shouldPoll = poll || vtt
-    const shouldDownload = download || vtt
+    // vtt / paragraph 均隐含 poll + download
+    const shouldPoll = poll || vtt || paragraph
+    const shouldDownload = download || vtt || paragraph
 
     const data = shouldPoll ? await this.pollTask(taskId) : await this.fetchTaskData(taskId)
     if (!data) return
@@ -143,11 +143,18 @@ export class TingwuManager {
       }
 
       const jsonPath = await this.downloadTranscription(transcriptionUrl, taskId)
+      if (!jsonPath) return
 
-      // --vtt: 下载完成后自动转换为 WebVTT 字幕文件
-      if (vtt && jsonPath) {
+      // --vtt: 按句子转换为 WebVTT 字幕文件
+      if (vtt) {
         const {cueCount, outputPath} = this.convertToWebVtt(jsonPath)
         console.log(`WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
+      }
+
+      // --paragraph: 按段落转换为 WebVTT 字幕文件
+      if (paragraph) {
+        const {cueCount, outputPath} = this.convertToParagraphVtt(jsonPath)
+        console.log(`段落 WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
       }
     }
   }
@@ -248,6 +255,33 @@ export class TingwuManager {
     const vtt = this.renderWebVtt(cues)
 
     const finalOutput = outputPath ?? inputPath.replace(/\.json$/i, '.vtt')
+    writeFileSync(finalOutput, vtt, 'utf8')
+    return {cueCount: cues.length, outputPath: finalOutput}
+  }
+
+  // 每个段落生成一条字幕, 时间跨度为段落首词到末词
+  private buildParagraphCues(paragraphs: TranscriptionParagraph[]): VttCue[] {
+    const cues: VttCue[] = []
+    for (const paragraph of paragraphs) {
+      const words = paragraph.Words ?? []
+      if (words.length === 0) continue
+      cues.push({end: words.at(-1)!.End, speaker: paragraph.SpeakerId, start: words[0].Start, words})
+    }
+
+    return cues
+  }
+
+  convertToParagraphVtt(inputPath: string, outputPath?: string): {cueCount: number; outputPath: string} {
+    if (!existsSync(inputPath)) throw new Error(`输入文件不存在: ${inputPath}`)
+
+    const data = JSON.parse(readFileSync(inputPath, 'utf8')) as TranscriptionJson
+    const paragraphs = data.Transcription?.Paragraphs ?? []
+    if (paragraphs.length === 0) throw new Error('JSON 中未找到 Transcription.Paragraphs 数据')
+
+    const cues = this.buildParagraphCues(paragraphs)
+    const vtt = this.renderWebVtt(cues)
+
+    const finalOutput = outputPath ?? inputPath.replace(/\.json$/i, '.paragraph.vtt')
     writeFileSync(finalOutput, vtt, 'utf8')
     return {cueCount: cues.length, outputPath: finalOutput}
   }
