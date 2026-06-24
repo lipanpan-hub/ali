@@ -1,6 +1,6 @@
 import {CreateTaskRequest, CreateTranscriptionPhrasesRequest, UpdateTranscriptionPhrasesRequest} from '@alicloud/tingwu20230930'
 import clipboard from 'clipboardy'
-import {existsSync, readFileSync, writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {join} from 'node:path'
 
@@ -145,6 +145,9 @@ export class TingwuManager {
       const jsonPath = await this.downloadTranscription(transcriptionUrl, taskId)
       if (!jsonPath) return
 
+      // --download: 保留 JSON 文件
+      if (download) console.log(`转写结果已保存到: ${jsonPath}`)
+
       // --vtt: 按句子转换为 WebVTT 字幕文件
       if (vtt) {
         const {cueCount, outputPath} = this.convertToWebVtt(jsonPath)
@@ -156,6 +159,9 @@ export class TingwuManager {
         const {cueCount, outputPath} = this.convertToParagraphVtt(jsonPath)
         console.log(`段落 WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
       }
+
+      // JSON 仅为转换中间产物, 未显式 --download 时删除, 只保留 vtt
+      if (!download) unlinkSync(jsonPath)
     }
   }
 
@@ -196,7 +202,6 @@ export class TingwuManager {
       const text = await resp.text()
       const filePath = join(process.cwd(), `${taskId}.json`)
       writeFileSync(filePath, text, 'utf8')
-      console.log(`转写结果已保存到: ${filePath}`)
       return filePath
     })
   }

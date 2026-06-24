@@ -15,7 +15,7 @@
     "@alicloud/tingwu20230930": "^2.0.24",
     "@alicloud/vpc20160428": "^7.2.1",
     "@inquirer/prompts": "^7.10.1",
-    "@oclif/core": "^4",
+    "@oclif/core": "^4.11.7",
     "@oclif/plugin-autocomplete": "^3.2.46",
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-not-found": "^3.2.81",
