@@ -1,5 +1,5 @@
 import * as inquirer from '@inquirer/prompts'
-import {Command} from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import Fuse from 'fuse.js'
 
 import {ConfigManager} from '../../../lib/config/config.js'
@@ -16,16 +16,34 @@ const LANGUAGE_CHOICES = [
 
 export default class TwuTaskAdd extends Command {
   static aliases = ['twu:ta']
-  static description = '创建通义听悟离线语音转写任务'
-  static examples = ['<%= config.bin %> <%= command.id %>']
+  static description = '创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)'
+  static examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> -k myAppKey -u https://example.com/a.mp4 -l cn',
+    '<%= config.bin %> <%= command.id %> -u https://example.com/a.mp4 --diarization --speaker-count 2',
+    '<%= config.bin %> <%= command.id %> -u https://example.com/a.mp4 -p phrase-id-xxx',
+  ]
+  static flags = {
+    'app-key': Flags.string({char: 'k', description: '听悟项目 AppKey'}),
+    diarization: Flags.boolean({default: false, description: '开启说话人分离'}),
+    'file-url': Flags.string({char: 'u', description: '音视频文件 URL'}),
+    language: Flags.string({char: 'l', description: '源语言', options: LANGUAGE_CHOICES.map((c) => c.value)}),
+    'phrase-id': Flags.string({char: 'p', description: '热词词表 ID'}),
+    'speaker-count': Flags.integer({description: '说话人数量 (0 表示自动判断), 指定即开启说话人分离'}),
+  }
 
   public async run(): Promise<void> {
+    const {flags} = await this.parse(TwuTaskAdd)
+
     // #region 采集 AppKey
     const configManager = new ConfigManager()
     const appKeys = configManager.getCurrentProfile()?.tingwu_app_keys ?? []
 
     let appKey: string
-    if (appKeys.length > 0) {
+    const fromFlag = Boolean(flags['app-key'])
+    if (fromFlag) {
+      appKey = flags['app-key']!.trim()
+    } else if (appKeys.length > 0) {
       // 存在历史 AppKey, 用 fuse 模糊搜索选择, 也允许直接输入新值
       const fuse = new Fuse(appKeys, {threshold: 0.4})
       appKey = await inquirer.search({
@@ -39,19 +57,19 @@ export default class TwuTaskAdd extends Command {
           return choices
         },
       })
+      appKey = appKey.trim()
     } else {
-      appKey = await inquirer.input({message: '请输入听悟项目 AppKey:'})
+      appKey = (await inquirer.input({message: '请输入听悟项目 AppKey:'})).trim()
     }
 
-    appKey = appKey.trim()
     if (!appKey) {
       this.log('AppKey 不能为空')
       return
     }
 
-    // 最终使用的 AppKey 不在配置中时, 询问是否保存
+    // 最终使用的 AppKey 不在配置中时保存: 交互模式下询问, flag 模式下自动保存
     if (!appKeys.includes(appKey)) {
-      const save = await inquirer.confirm({default: true, message: '该 AppKey 不在配置中, 是否保存到配置文件?'})
+      const save = fromFlag || (await inquirer.confirm({default: true, message: '该 AppKey 不在配置中, 是否保存到配置文件?'}))
       if (save) {
         const ok = configManager.updateCurrentProfile({tingwu_app_keys: [...appKeys, appKey]}) // eslint-disable-line camelcase
         this.log(ok ? 'AppKey 已保存到配置' : '当前无可用配置, AppKey 未保存')
@@ -60,40 +78,47 @@ export default class TwuTaskAdd extends Command {
     // #endregion
 
     // #region 采集任务参数
-    const fileUrl = (await inquirer.input({message: '请输入音视频文件 URL:'})).trim()
+    const fileUrl = flags['file-url'] ? flags['file-url'].trim() : (await inquirer.input({message: '请输入音视频文件 URL:'})).trim()
     if (!fileUrl) {
       this.log('文件 URL 不能为空')
       return
     }
 
-    const sourceLanguage = await inquirer.select({choices: LANGUAGE_CHOICES, message: '请选择源语言:'})
+    const sourceLanguage = flags.language ?? (await inquirer.select({choices: LANGUAGE_CHOICES, message: '请选择源语言:'}))
 
-    const diarizationEnabled = await inquirer.confirm({default: false, message: '是否开启说话人分离?'})
-
+    let diarizationEnabled: boolean
     let speakerCount = 0
-    if (diarizationEnabled) {
-      const input = await inquirer.input({
-        default: '0',
-        message: '请输入说话人数量 (0 表示自动判断):',
-        validate: (v) => /^\d+$/.test(v) || '请输入数字',
-      })
-      speakerCount = Number(input)
+    if (flags.diarization || flags['speaker-count'] !== undefined) {
+      diarizationEnabled = true
+      speakerCount = flags['speaker-count'] ?? 0
+    } else {
+      diarizationEnabled = await inquirer.confirm({default: false, message: '是否开启说话人分离?'})
+      if (diarizationEnabled) {
+        const input = await inquirer.input({
+          default: '0',
+          message: '请输入说话人数量 (0 表示自动判断):',
+          validate: (v) => /^\d+$/.test(v) || '请输入数字',
+        })
+        speakerCount = Number(input)
+      }
     }
     // #endregion
 
     // #region 选择热词词表
     const manager = new TingwuManager()
-    let phraseId: string | undefined
-    const usePhrase = await inquirer.confirm({default: false, message: '是否使用热词词表?'})
-    if (usePhrase) {
-      const phrases = await manager.getPhrases()
-      if (phrases.length === 0) {
-        this.log('当前没有可用的热词词表')
-      } else {
-        phraseId = await inquirer.select({
-          choices: phrases.map((p) => ({name: `${p.name ?? '-'}  ${p.description ?? ''}`.trim(), value: p.phraseId})),
-          message: '请选择热词词表:',
-        })
+    let phraseId: string | undefined = flags['phrase-id']
+    if (!phraseId) {
+      const usePhrase = await inquirer.confirm({default: false, message: '是否使用热词词表?'})
+      if (usePhrase) {
+        const phrases = await manager.getPhrases()
+        if (phrases.length === 0) {
+          this.log('当前没有可用的热词词表')
+        } else {
+          phraseId = await inquirer.select({
+            choices: phrases.map((p) => ({name: `${p.name ?? '-'}  ${p.description ?? ''}`.trim(), value: p.phraseId})),
+            message: '请选择热词词表:',
+          })
+        }
       }
     }
     // #endregion
