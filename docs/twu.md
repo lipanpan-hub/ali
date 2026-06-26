@@ -115,7 +115,7 @@ EXAMPLES
   $ ali twu phrase add --file phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/phrase/add.ts)_
+_See code: [src/commands/twu/phrase/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/phrase/add.ts)_
 
 ## `ali twu phrase del [PHRASEID]`
 
@@ -140,7 +140,7 @@ EXAMPLES
   $ ali twu phrase del a93b91141c0f422fa114af203f8b
 ```
 
-_See code: [src/commands/twu/phrase/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/phrase/del.ts)_
+_See code: [src/commands/twu/phrase/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/phrase/del.ts)_
 
 ## `ali twu phrase get [PHRASEID]`
 
@@ -170,7 +170,7 @@ EXAMPLES
   $ ali twu phrase get a93b91141c0f422fa114af203f8b --out phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/get.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/phrase/get.ts)_
+_See code: [src/commands/twu/phrase/get.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/phrase/get.ts)_
 
 ## `ali twu phrase list`
 
@@ -190,7 +190,7 @@ EXAMPLES
   $ ali twu phrase list
 ```
 
-_See code: [src/commands/twu/phrase/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/phrase/list.ts)_
+_See code: [src/commands/twu/phrase/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/phrase/list.ts)_
 
 ## `ali twu phrase update [PHRASEID]`
 
@@ -220,7 +220,7 @@ EXAMPLES
   $ ali twu phrase update a93b91141c0f422fa114af203f8b --file phrases.json
 ```
 
-_See code: [src/commands/twu/phrase/update.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/phrase/update.ts)_
+_See code: [src/commands/twu/phrase/update.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/phrase/update.ts)_
 
 ## `ali twu pl`
 
@@ -270,41 +270,73 @@ EXAMPLES
 
 ## `ali twu ta`
 
-创建通义听悟离线语音转写任务
+创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)
 
 ```
 USAGE
-  $ ali twu ta
+  $ ali twu ta [-k <value>] [--diarization] [-u <value>] [-l cn|en|yue|ja|ko|auto] [-p <value>]
+    [--speaker-count <value>]
+
+FLAGS
+  -k, --app-key=<value>        听悟项目 AppKey
+  -l, --language=<option>      源语言
+                               <options: cn|en|yue|ja|ko|auto>
+  -p, --phrase-id=<value>      热词词表 ID
+  -u, --file-url=<value>       音视频文件 URL
+      --diarization            开启说话人分离
+      --speaker-count=<value>  说话人数量 (0 表示自动判断), 指定即开启说话人分离
 
 DESCRIPTION
-  创建通义听悟离线语音转写任务
+  创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)
 
 ALIASES
   $ ali twu ta
 
 EXAMPLES
   $ ali twu ta
+
+  $ ali twu ta -k myAppKey -u https://example.com/a.mp4 -l cn
+
+  $ ali twu ta -u https://example.com/a.mp4 --diarization --speaker-count 2
+
+  $ ali twu ta -u https://example.com/a.mp4 -p phrase-id-xxx
 ```
 
 ## `ali twu task add`
 
-创建通义听悟离线语音转写任务
+创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)
 
 ```
 USAGE
-  $ ali twu task add
+  $ ali twu task add [-k <value>] [--diarization] [-u <value>] [-l cn|en|yue|ja|ko|auto] [-p <value>]
+    [--speaker-count <value>]
+
+FLAGS
+  -k, --app-key=<value>        听悟项目 AppKey
+  -l, --language=<option>      源语言
+                               <options: cn|en|yue|ja|ko|auto>
+  -p, --phrase-id=<value>      热词词表 ID
+  -u, --file-url=<value>       音视频文件 URL
+      --diarization            开启说话人分离
+      --speaker-count=<value>  说话人数量 (0 表示自动判断), 指定即开启说话人分离
 
 DESCRIPTION
-  创建通义听悟离线语音转写任务
+  创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)
 
 ALIASES
   $ ali twu ta
 
 EXAMPLES
   $ ali twu task add
+
+  $ ali twu task add -k myAppKey -u https://example.com/a.mp4 -l cn
+
+  $ ali twu task add -u https://example.com/a.mp4 --diarization --speaker-count 2
+
+  $ ali twu task add -u https://example.com/a.mp4 -p phrase-id-xxx
 ```
 
-_See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/task/add.ts)_
+_See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/task/add.ts)_
 
 ## `ali twu task query [TASKID]`
 
@@ -312,16 +344,17 @@ _See code: [src/commands/twu/task/add.ts](https://github.com/lipanpan-hub/ali/bl
 
 ```
 USAGE
-  $ ali twu task query [TASKID] [-d] [--paragraph] [--vtt] [-w]
+  $ ali twu task query [TASKID] [-d] [--paragraph] [-t <value>] [--vtt] [-w]
 
 ARGUMENTS
   [TASKID]  听悟任务 ID
 
 FLAGS
-  -d, --download   任务完成时下载转写结果 JSON 到当前目录
-  -w, --watch      轮询查询, 直到任务状态为完成或失败
-      --paragraph  轮询等待任务完成, 下载 JSON 并按段落转换为 WebVTT 字幕文件
-      --vtt        轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
+  -d, --download         任务完成时下载转写结果 JSON 到当前目录
+  -t, --task-id=<value>  听悟任务 ID (未提供时进入交互式录入)
+  -w, --watch            轮询查询, 直到任务状态为完成或失败
+      --paragraph        轮询等待任务完成, 下载 JSON 并按段落转换为 WebVTT 字幕文件
+      --vtt              轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
 
 DESCRIPTION
   根据任务 ID 查询通义听悟转写任务信息
@@ -339,9 +372,11 @@ EXAMPLES
   $ ali twu task query c5394c6ee0fb474899d42215a3925c7e --vtt
 
   $ ali twu task query c5394c6ee0fb474899d42215a3925c7e --paragraph
+
+  $ ali twu task query -t c5394c6ee0fb474899d42215a3925c7e
 ```
 
-_See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.11/src/commands/twu/task/query.ts)_
+_See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/twu/task/query.ts)_
 
 ## `ali twu tq [TASKID]`
 
@@ -349,16 +384,17 @@ _See code: [src/commands/twu/task/query.ts](https://github.com/lipanpan-hub/ali/
 
 ```
 USAGE
-  $ ali twu tq [TASKID] [-d] [--paragraph] [--vtt] [-w]
+  $ ali twu tq [TASKID] [-d] [--paragraph] [-t <value>] [--vtt] [-w]
 
 ARGUMENTS
   [TASKID]  听悟任务 ID
 
 FLAGS
-  -d, --download   任务完成时下载转写结果 JSON 到当前目录
-  -w, --watch      轮询查询, 直到任务状态为完成或失败
-      --paragraph  轮询等待任务完成, 下载 JSON 并按段落转换为 WebVTT 字幕文件
-      --vtt        轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
+  -d, --download         任务完成时下载转写结果 JSON 到当前目录
+  -t, --task-id=<value>  听悟任务 ID (未提供时进入交互式录入)
+  -w, --watch            轮询查询, 直到任务状态为完成或失败
+      --paragraph        轮询等待任务完成, 下载 JSON 并按段落转换为 WebVTT 字幕文件
+      --vtt              轮询等待任务完成, 下载 JSON 并自动转换为 WebVTT 字幕文件
 
 DESCRIPTION
   根据任务 ID 查询通义听悟转写任务信息
@@ -376,4 +412,6 @@ EXAMPLES
   $ ali twu tq c5394c6ee0fb474899d42215a3925c7e --vtt
 
   $ ali twu tq c5394c6ee0fb474899d42215a3925c7e --paragraph
+
+  $ ali twu tq -t c5394c6ee0fb474899d42215a3925c7e
 ```
