@@ -25,9 +25,10 @@ export default class TwuTaskAdd extends Command {
   ]
   static flags = {
     'app-key': Flags.string({char: 'k', description: '听悟项目 AppKey'}),
-    diarization: Flags.boolean({default: false, description: '开启说话人分离'}),
+    diarization: Flags.boolean({allowNo: true, description: '开启说话人分离 (不指定则交互式询问)'}),
     'file-url': Flags.string({char: 'u', description: '音视频文件 URL'}),
     language: Flags.string({char: 'l', description: '源语言', options: LANGUAGE_CHOICES.map((c) => c.value)}),
+    phrase: Flags.boolean({allowNo: true, description: '是否使用热词词表 (不指定则交互式询问)'}),
     'phrase-id': Flags.string({char: 'p', description: '热词词表 ID'}),
     'speaker-count': Flags.integer({description: '说话人数量 (0 表示自动判断), 指定即开启说话人分离'}),
   }
@@ -88,8 +89,8 @@ export default class TwuTaskAdd extends Command {
 
     let diarizationEnabled: boolean
     let speakerCount = 0
-    if (flags.diarization || flags['speaker-count'] !== undefined) {
-      diarizationEnabled = true
+    if (flags.diarization !== undefined || flags['speaker-count'] !== undefined) {
+      diarizationEnabled = flags.diarization ?? true
       speakerCount = flags['speaker-count'] ?? 0
     } else {
       diarizationEnabled = await inquirer.confirm({default: false, message: '是否开启说话人分离?'})
@@ -108,7 +109,8 @@ export default class TwuTaskAdd extends Command {
     const manager = new TingwuManager()
     let phraseId: string | undefined = flags['phrase-id']
     if (!phraseId) {
-      const usePhrase = await inquirer.confirm({default: false, message: '是否使用热词词表?'})
+      // phrase flag 显式指定时使用其值, 未指定 (undefined) 才交互式询问
+      const usePhrase = flags.phrase ?? (await inquirer.confirm({default: false, message: '是否使用热词词表?'}))
       if (usePhrase) {
         const phrases = await manager.getPhrases()
         if (phrases.length === 0) {
