@@ -105,6 +105,7 @@ ali ecs list --help
 * [`ali ecs`](docs/ecs.md) - 管理 ECS 实例
 * [`ali help`](docs/help.md) - Display help for ali.
 * [`ali img`](docs/img.md) - 管理镜像
+* [`ali nls`](docs/nls.md) - 智能语音服务 (录音文件识别)
 * [`ali sgp`](docs/sgp.md) - 管理安全组
 * [`ali twu`](docs/twu.md) - 管理通义听悟任务
 * [`ali version`](docs/version.md) - 查看项目的版本

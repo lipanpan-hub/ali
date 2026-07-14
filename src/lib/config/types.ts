@@ -5,6 +5,7 @@ export interface Profile {
   language: string
   mode: string
   name: string
+  nls_app_keys?: string[]
   output_format: string
   region_id: string
   site: string

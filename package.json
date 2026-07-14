@@ -10,6 +10,7 @@
   "dependencies": {
     "@alicloud/bssopenapi20171214": "^4.1.1",
     "@alicloud/ecs20140526": "^7.7.5",
+    "@alicloud/nls-filetrans-2018-08-17": "^1.0.0",
     "@alicloud/openapi-core": "^1.0.7",
     "@alicloud/tea-util": "^1.4.11",
     "@alicloud/tingwu20230930": "^2.0.24",
@@ -94,6 +95,9 @@
       },
       "img": {
         "description": "管理镜像"
+      },
+      "nls": {
+        "description": "智能语音服务 (录音文件识别)"
       },
       "sgp": {
         "description": "管理安全组"

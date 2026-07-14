@@ -3,10 +3,33 @@
 
 管理阿里云 CLI 配置
 
+* [`ali config edit`](#ali-config-edit)
 * [`ali config list`](#ali-config-list)
 * [`ali config ls`](#ali-config-ls)
 * [`ali config set`](#ali-config-set)
 * [`ali config show`](#ali-config-show)
+
+## `ali config edit`
+
+编辑用户配置文件, 默认启动内置 TUI 编辑器, 也可选择系统中的外部编辑器
+
+```
+USAGE
+  $ ali config edit [-e]
+
+FLAGS
+  -e, --editor  交互式选择系统中可用的外部编辑器进行编辑
+
+DESCRIPTION
+  编辑用户配置文件, 默认启动内置 TUI 编辑器, 也可选择系统中的外部编辑器
+
+EXAMPLES
+  $ ali config edit
+
+  $ ali config edit --editor
+```
+
+_See code: [src/commands/config/edit.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/edit.ts)_
 
 ## `ali config list`
 

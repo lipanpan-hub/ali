@@ -1,6 +1,6 @@
 import {CreateTaskRequest, CreateTranscriptionPhrasesRequest, UpdateTranscriptionPhrasesRequest} from '@alicloud/tingwu20230930'
 import clipboard from 'clipboardy'
-import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'node:fs'
+import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {join} from 'node:path'
 
@@ -11,9 +11,12 @@ import {wrap} from '../client/wrap.js'
 const require = createRequire(import.meta.url)
 const {$OpenApiUtil} = require('@alicloud/openapi-core')
 
-export interface CreateTaskOptions {
+export interface RecognizeOptions {
   appKey: string
   diarizationEnabled: boolean
+  enableParagraph: boolean
+  enableTxt: boolean
+  enableVtt: boolean
   fileUrl: string
   phraseId?: string
   sourceLanguage: string
@@ -83,10 +86,37 @@ export class TingwuManager {
     this.client = c.client
   }
 
-  // #region 创建离线转写任务
-  async createTask(options: CreateTaskOptions): Promise<void> {
+  // #region 离线转写完整流程 (提交 -> 轮询 -> 下载 -> 生成字幕/文本)
+  async recognize(options: RecognizeOptions): Promise<void> {
     if (!this.client) return
 
+    const taskId = await this.submitTask(options)
+    if (!taskId) return
+
+    const data = await this.pollTask(taskId)
+    if (!data) return
+
+    if (data.taskStatus !== 'COMPLETED') {
+      console.log(`任务未成功完成: ${data.taskStatus ?? '-'}`)
+      if (data.errorCode) console.log(`错误信息: ${data.errorCode} - ${data.errorMessage ?? ''}`)
+      return
+    }
+
+    const transcriptionUrl = data.result?.transcription
+    if (!transcriptionUrl) {
+      console.log('转写结果 URL 缺失, 无法生成文件')
+      return
+    }
+
+    const jsonPath = await this.downloadTranscription(transcriptionUrl, taskId)
+    if (!jsonPath) return
+    console.log(`转写结果已保存到: ${jsonPath}`)
+
+    this.generateOutputs(jsonPath, options)
+  }
+
+  // 提交离线转写任务, 成功返回 taskId 并将其写入剪贴板
+  private async submitTask(options: RecognizeOptions): Promise<null | string> {
     const transcription: Record<string, unknown> = {diarizationEnabled: options.diarizationEnabled}
     // speakerCount: 0 表示不定人数自动判断, 其它正整数表示固定人数
     if (options.diarizationEnabled) transcription.diarization = {speakerCount: options.speakerCount}
@@ -101,67 +131,36 @@ export class TingwuManager {
     })
 
     const res = await wrap('创建听悟转写任务', async () => this.client.createTaskWithOptions(request, {}, createRuntime()))
-    if (!res) return
+    if (!res) return null
 
     const data = res.body?.data
     if (!data?.taskId) {
       console.log(`创建失败: ${res.body?.message ?? '未知错误'}`)
-      return
+      return null
     }
 
     console.log('转写任务已提交')
     console.log(`任务ID: ${data.taskId}`)
-    console.log(`任务标识: ${data.taskKey ?? '-'}`)
-    console.log(`当前状态: ${data.taskStatus ?? '-'}`)
-
     // 任务ID 写入剪贴板, 方便后续查询
     await wrap('复制任务ID到剪贴板', async () => clipboard.write(data.taskId!))
+    return data.taskId
   }
-  // #endregion
 
-  // #region 查询任务信息
-  async queryTask(taskId: string, download = false, poll = false, vtt = false, paragraph = false): Promise<void> {
-    if (!this.client) return
+  // 根据开关生成 VTT / 段落 VTT / 纯文本文件
+  private generateOutputs(jsonPath: string, options: RecognizeOptions): void {
+    if (options.enableVtt) {
+      const {cueCount, outputPath} = this.convertToWebVtt(jsonPath)
+      console.log(`WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
+    }
 
-    // vtt / paragraph 均隐含 poll + download
-    const shouldPoll = poll || vtt || paragraph
-    const shouldDownload = download || vtt || paragraph
+    if (options.enableParagraph) {
+      const {cueCount, outputPath} = this.convertToParagraphVtt(jsonPath)
+      console.log(`段落 WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
+    }
 
-    const data = shouldPoll ? await this.pollTask(taskId) : await this.fetchTaskData(taskId)
-    if (!data) return
-
-    console.log(`任务状态: ${data.taskStatus ?? '-'}`)
-    if (data.errorCode) console.log(`错误信息: ${data.errorCode} - ${data.errorMessage ?? ''}`)
-
-    const transcriptionUrl = data.result?.transcription
-    console.log(transcriptionUrl ? `转写结果 URL: ${transcriptionUrl}` : '结果尚未就绪 (任务可能还在进行中)')
-
-    if (shouldDownload && transcriptionUrl) {
-      if (data.taskStatus !== 'COMPLETED') {
-        console.log('任务尚未完成, 跳过下载')
-        return
-      }
-
-      const jsonPath = await this.downloadTranscription(transcriptionUrl, taskId)
-      if (!jsonPath) return
-
-      // --download: 保留 JSON 文件
-      if (download) console.log(`转写结果已保存到: ${jsonPath}`)
-
-      // --vtt: 按句子转换为 WebVTT 字幕文件
-      if (vtt) {
-        const {cueCount, outputPath} = this.convertToWebVtt(jsonPath)
-        console.log(`WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
-      }
-
-      // --paragraph: 按段落转换为 WebVTT 字幕文件
-      if (paragraph) {
-        const {cueCount, outputPath} = this.convertToParagraphVtt(jsonPath)
-        console.log(`段落 WebVTT 字幕已生成: ${outputPath} (共 ${cueCount} 条字幕)`)
-      }
-
-      // JSON 仅为转换中间产物, 未显式 --download 时删除, 只保留 vtt
-      if (!download) unlinkSync(jsonPath)
+    if (options.enableTxt) {
+      const {lineCount, outputPath} = this.convertToTxt(jsonPath)
+      console.log(`纯文本已生成: ${outputPath} (共 ${lineCount} 行)`)
     }
   }
 
@@ -290,7 +289,66 @@ export class TingwuManager {
     writeFileSync(finalOutput, vtt, 'utf8')
     return {cueCount: cues.length, outputPath: finalOutput}
   }
+
+  // 拼接一句话内的词, 英文词间补空格, 中文直接相连
+  private joinWords(words: TranscriptionWord[]): string {
+    return words.map((word, index) => (index > 0 && /^[A-Za-z0-9]/.test(word.Text) ? ' ' : '') + word.Text).join('').trim()
+  }
+
+  // 按句子 (SentenceId) 抽取纯文本, 每句一行
+  convertToTxt(inputPath: string, outputPath?: string): {lineCount: number; outputPath: string} {
+    if (!existsSync(inputPath)) throw new Error(`输入文件不存在: ${inputPath}`)
+
+    const data = JSON.parse(readFileSync(inputPath, 'utf8')) as TranscriptionJson
+    const paragraphs = data.Transcription?.Paragraphs ?? []
+    if (paragraphs.length === 0) throw new Error('JSON 中未找到 Transcription.Paragraphs 数据')
+
+    const lines = this.buildVttCues(paragraphs)
+      .map((cue) => this.joinWords(cue.words))
+      .filter(Boolean)
+
+    const finalOutput = outputPath ?? inputPath.replace(/\.json$/i, '.txt')
+    writeFileSync(finalOutput, lines.join('\n') + '\n', 'utf8')
+    return {lineCount: lines.length, outputPath: finalOutput}
+  }
   // #endregion
+  // #endregion
+
+
+
+  // #region 解析热词词表文件 (校验失败抛 Error 由命令层捕获)
+  static parsePhraseFile(file: string): PhraseDetail {
+    const raw: unknown = JSON.parse(readFileSync(file, 'utf8'))
+    if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+      throw new Error('文件格式错误, 应为 JSON 对象')
+    }
+
+    const obj = raw as Record<string, unknown>
+    const weightsRaw = obj.wordWeights
+    if (typeof weightsRaw !== 'object' || weightsRaw === null || Array.isArray(weightsRaw)) {
+      throw new Error('缺少 wordWeights 字段或其格式错误')
+    }
+
+    const wordWeights: Record<string, number> = {}
+    for (const [word, weight] of Object.entries(weightsRaw)) {
+      if (!/^[1-5]$/.test(String(weight))) throw new Error(`热词「${word}」的权重无效 (需为 1-5 的整数)`)
+      wordWeights[word] = Number(weight)
+    }
+
+    if (Object.keys(wordWeights).length === 0) throw new Error('wordWeights 不能为空')
+
+    return {
+      description: typeof obj.description === 'string' ? obj.description : '',
+      name: typeof obj.name === 'string' ? obj.name : '',
+      wordWeights,
+    }
+  }
+  // #endregion
+
+  // #region 写入热词词表文件
+  static writePhraseFile(file: string, data: PhraseDetail): void {
+    writeFileSync(file, JSON.stringify(data, null, 2), 'utf8')
+  }
   // #endregion
 
   // #region 创建热词词表

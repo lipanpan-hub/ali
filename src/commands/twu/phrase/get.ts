@@ -1,7 +1,6 @@
 import * as inquirer from '@inquirer/prompts'
 import {Args, Command, Flags} from '@oclif/core'
 
-import {writePhraseFile} from '../../../lib/twu/phraseFile.js'
 import {TingwuManager} from '../../../lib/twu/twu.js'
 
 export default class TwuPhraseGet extends Command {
@@ -53,7 +52,7 @@ export default class TwuPhraseGet extends Command {
       }
 
       try {
-        writePhraseFile(flags.out, detail)
+        TingwuManager.writePhraseFile(flags.out, detail)
       } catch (error) {
         this.log(`写入文件失败: ${(error as Error).message}`)
         return

@@ -16,21 +16,24 @@ const LANGUAGE_CHOICES = [
 
 export default class TwuTaskAdd extends Command {
   static aliases = ['twu:ta']
-  static description = '创建通义听悟离线语音转写任务 (未提供的参数将进入交互式录入)'
+  static description = '创建通义听悟离线语音转写任务 (提交后轮询等待完成, 自动下载结果并生成 VTT 字幕和纯文本)'
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> -k myAppKey -u https://example.com/a.mp4 -l cn',
     '<%= config.bin %> <%= command.id %> -u https://example.com/a.mp4 --diarization --speaker-count 2',
-    '<%= config.bin %> <%= command.id %> -u https://example.com/a.mp4 -p phrase-id-xxx',
+    '<%= config.bin %> <%= command.id %> -u https://example.com/a.mp4 -p phrase-id-xxx --paragraph',
   ]
   static flags = {
     'app-key': Flags.string({char: 'k', description: '听悟项目 AppKey'}),
     diarization: Flags.boolean({allowNo: true, description: '开启说话人分离 (不指定则交互式询问)'}),
     'file-url': Flags.string({char: 'u', description: '音视频文件 URL'}),
     language: Flags.string({char: 'l', description: '源语言', options: LANGUAGE_CHOICES.map((c) => c.value)}),
+    paragraph: Flags.boolean({default: false, description: '额外按段落生成 WebVTT 字幕文件'}),
     phrase: Flags.boolean({allowNo: true, description: '是否使用热词词表 (不指定则交互式询问)'}),
     'phrase-id': Flags.string({char: 'p', description: '热词词表 ID'}),
     'speaker-count': Flags.integer({description: '说话人数量 (0 表示自动判断), 指定即开启说话人分离'}),
+    txt: Flags.boolean({default: true, description: '将识别结果抽取为纯文本文件'}),
+    vtt: Flags.boolean({default: true, description: '将识别结果转换为 WebVTT 字幕文件'}),
   }
 
   public async run(): Promise<void> {
@@ -125,6 +128,16 @@ export default class TwuTaskAdd extends Command {
     }
     // #endregion
 
-    await manager.createTask({appKey, diarizationEnabled, fileUrl, phraseId, sourceLanguage, speakerCount})
+    await manager.recognize({
+      appKey,
+      diarizationEnabled,
+      enableParagraph: flags.paragraph,
+      enableTxt: flags.txt,
+      enableVtt: flags.vtt,
+      fileUrl,
+      phraseId,
+      sourceLanguage,
+      speakerCount,
+    })
   }
 }

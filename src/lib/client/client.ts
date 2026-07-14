@@ -8,6 +8,7 @@ const Bssopenapi20171214 = require('@alicloud/bssopenapi20171214').default
 const Ecs20140526 = require('@alicloud/ecs20140526').default
 const Tingwu20230930 = require('@alicloud/tingwu20230930').default
 const Vpc20160428 = require('@alicloud/vpc20160428').default
+const NlsFileTransClient = require('@alicloud/nls-filetrans-2018-08-17')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SdkClient = any
@@ -69,4 +70,17 @@ export function createTingwuClient(): ClientWithRegion | null {
   // 通义听悟仅部署在华北2(北京), endpoint 与 regionId 固定, 不读取配置地域
   const config = new $OpenApiUtil.Config({...c.config, endpoint: 'tingwu.cn-beijing.aliyuncs.com', regionId: 'cn-beijing'})
   return {client: new Tingwu20230930(config), region: 'cn-beijing'}
+}
+
+export function createNlsClient(): ClientWithRegion | null {
+  const c = getConfig()
+  if (!c) return null
+  // 录音文件识别为中心化服务, endpoint 固定上海, 基于 pop-core RPCClient 而非 OpenApi
+  const client = new NlsFileTransClient({
+    accessKeyId: c.config.accessKeyId,
+    accessKeySecret: c.config.accessKeySecret,
+    apiVersion: '2018-08-17',
+    endpoint: 'http://filetrans.cn-shanghai.aliyuncs.com',
+  })
+  return {client, region: 'cn-shanghai'}
 }

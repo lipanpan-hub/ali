@@ -1,7 +1,6 @@
 import * as inquirer from '@inquirer/prompts'
 import {Args, Command, Flags} from '@oclif/core'
 
-import {parsePhraseFile} from '../../../lib/twu/phraseFile.js'
 import {TingwuManager} from '../../../lib/twu/twu.js'
 
 export default class TwuPhraseUpdate extends Command {
@@ -56,7 +55,7 @@ export default class TwuPhraseUpdate extends Command {
     if (flags.file) {
       let imported
       try {
-        imported = parsePhraseFile(flags.file)
+        imported = TingwuManager.parsePhraseFile(flags.file)
       } catch (error) {
         this.log(`读取文件失败: ${(error as Error).message}`)
         return
