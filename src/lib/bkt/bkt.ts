@@ -176,8 +176,19 @@ export class BktManager {
       return
     }
 
+    // 固定后三列宽度，剩余空间留给名称列并开启换行，避免超长 key 撑破终端导致边框错乱
+    const SIZE_WIDTH = 12
+    const MODIFIED_WIDTH = 28
+    const STORAGE_WIDTH = 12
+    const BORDER_WIDTH = 5
+    const terminalWidth = process.stdout.columns || 120
+    const nameWidth = Math.max(20, terminalWidth - SIZE_WIDTH - MODIFIED_WIDTH - STORAGE_WIDTH - BORDER_WIDTH)
+
     const table = new Table({
+      colWidths: [nameWidth, SIZE_WIDTH, MODIFIED_WIDTH, STORAGE_WIDTH],
       head: ['名称', '大小', '最后修改', '存储类型'],
+      wordWrap: true,
+      // wrapOnWordBoundary: false, // key无空格，关闭单词边界才能按字符完整折行而非截断
     })
 
     for (const o of all) {
@@ -320,7 +331,8 @@ export class BktManager {
     if (!this.client || !this.profile) return
 
     // 收集待上传文件: 手动指定优先, 否则扫描当前目录交互式选择
-    const uploads = filePaths && filePaths.length > 0 ? this.resolveFiles(filePaths) : await this.pickFiles()
+    // filePaths 是可选参数, 用 && 短路先确认它非 undefined 再读 length, 避免空值访问报错
+    const uploads = (filePaths && (filePaths.length > 0)) ? this.resolveFiles(filePaths) : await this.pickFiles()
     if (uploads.length === 0) return
 
     // 指定桶名则直接查找, 否则交互式选择
@@ -558,6 +570,61 @@ export class BktManager {
           value: o,
         }))
       },
+    })
+  }
+  // #endregion
+
+  // #region 交互式多选对象
+  async selectObjects(bucket: BucketInfo): Promise<ObjectInfo[]> {
+    const objects = await this.getObjects(bucket)
+    if (objects.length === 0) {
+      console.log(`存储桶 ${bucket.name} 中没有对象`)
+      return []
+    }
+
+    const choices = objects.map((o) => ({
+      description: `${this.formatSize(o.size)} | ${o.lastModified}`,
+      title: o.name,
+      value: o,
+    }))
+    const fuse = new Fuse(choices, {keys: ['title'], threshold: 0.4})
+
+    const {selected} = await prompts({
+      choices,
+      message: '搜索并选择要删除的对象（空格多选）',
+      name: 'selected',
+      suggest: async (input: string, choices: prompts.Choice[]) => {
+        if (!input) return choices
+        return fuse.search(input).map((r) => r.item)
+      },
+      type: 'autocompleteMultiselect',
+    })
+
+    if (!selected || selected.length === 0) {
+      console.log('未选择任何对象')
+      return []
+    }
+
+    return selected as ObjectInfo[]
+  }
+  // #endregion
+
+  // #region 批量删除对象
+  async deleteObjects(bucket: BucketInfo, objectNames: string[]): Promise<void> {
+    if (!this.profile || objectNames.length === 0) return
+
+    const client = this.createBucketClient(bucket)
+
+    await wrap('删除对象', async () => {
+      // ali-oss deleteMulti 单次最多删除 1000 个对象, 分批处理
+      const BATCH_SIZE = 1000
+      for (let i = 0; i < objectNames.length; i += BATCH_SIZE) {
+        const batch = objectNames.slice(i, i + BATCH_SIZE)
+        // eslint-disable-next-line no-await-in-loop
+        await client.deleteMulti(batch, {quiet: true})
+      }
+
+      console.log(`已从存储桶 ${bucket.name} 删除 ${objectNames.length} 个对象`)
     })
   }
   // #endregion
