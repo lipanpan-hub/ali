@@ -3,12 +3,12 @@ import {Command} from '@oclif/core'
 import {ConfigManager} from '../../lib/config/config.js'
 
 export default class ConfigLs extends Command {
-  static aliases = ['config:ls', 'config:show']
-static description = '列出所有的配置'
-static examples = ['<%= config.bin %> <%= command.id %>']
+  static aliases = ['cf:ls', 'cf:show']
+  static description = '列出所有的配置'
+  static examples = ['<%= config.bin %> <%= command.id %>']
 
   public async run(): Promise<void> {
-    const configManager = new ConfigManager()
+    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
     const configPath = configManager.getConfigPath()
 
     this.log(`配置文件路径: ${configPath}`)

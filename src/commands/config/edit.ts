@@ -6,6 +6,7 @@ import {editConfigTui} from '../../lib/config/edit-config-tui.js'
 import {ExternalEditor} from '../../lib/config/external-editor.js'
 
 export default class ConfigEdit extends Command {
+  static aliases = ["cf:edit"]
   static description = '编辑用户配置文件, 默认启动内置 TUI 编辑器, 也可选择系统中的外部编辑器'
 
   static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --editor']
@@ -16,7 +17,7 @@ export default class ConfigEdit extends Command {
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(ConfigEdit)
-    const configManager = new ConfigManager()
+    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
 
     // 确保配置文件存在, 不存在则写入默认空配置, 避免编辑器读取时报错
     if (!configManager.readConfig()) {

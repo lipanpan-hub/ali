@@ -54,7 +54,7 @@ export class BktManager {
   private profile: ReturnType<ConfigManager['getCurrentProfile']> = null
 
   constructor() {
-    const profile = new ConfigManager().getCurrentProfile()
+    const profile = new ConfigManager(ConfigManager.getDefaultPath()).getCurrentProfile()
     if (!profile) {
       console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
       return

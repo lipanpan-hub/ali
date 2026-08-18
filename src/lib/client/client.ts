@@ -18,7 +18,7 @@ let cached: null | {config: {accessKeyId: string; accessKeySecret: string}; regi
 function getConfig() {
   if (cached) return cached
 
-  const profile = new ConfigManager().getCurrentProfile()
+  const profile = new ConfigManager(ConfigManager.getDefaultPath()).getCurrentProfile()
   if (!profile) {
     console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
     return null

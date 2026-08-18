@@ -15,7 +15,7 @@ export default class ConfigSet extends Command {
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(ConfigSet)
-    const configManager = new ConfigManager()
+    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
 
     // #region 配置名称
     const profileName =
