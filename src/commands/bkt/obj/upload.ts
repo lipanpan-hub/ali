@@ -1,13 +1,13 @@
-import {Args, Command, Flags} from '@oclif/core'
+import {Args, Flags} from '@oclif/core'
 
+import {BaseCommand} from '../../../lib/base-command.js'
 import {BktManager} from '../../../lib/bkt/bkt.js'
 
-export default class BktUpload extends Command {
+export default class BktUpload extends BaseCommand {
   static aliases = ['bkt:obj:up']
   static args = {
     bucket: Args.string({description: '存储桶名称，未指定时交互式选择', required: false}),
   }
-
   static description = '上传文件到 OSS 存储桶，未指定 --file 时交互式选择当前目录文件'
   static examples = [
     '<%= config.bin %> <%= command.id %>',

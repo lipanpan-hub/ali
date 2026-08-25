@@ -9,6 +9,7 @@ import prompts from 'prompts'
 
 import {wrap} from '../client/wrap.js'
 import {ConfigManager} from '../config/config.js'
+import { createLogger } from '../logger/index.js'
 
 const require = createRequire(import.meta.url)
 const OSS = require('ali-oss')
@@ -51,10 +52,11 @@ const BUCKET_PROPERTIES: BucketProperty[] = [
 export class BktManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private client: any = null
+  private logger = createLogger('BktManager')
   private profile: ReturnType<ConfigManager['getCurrentProfile']> = null
 
   constructor() {
-    const profile = new ConfigManager(ConfigManager.getDefaultPath()).getCurrentProfile()
+    const profile = new ConfigManager(ConfigManager.resolveConfigPath()).getCurrentProfile()
     if (!profile) {
       console.log('配置文件不存在, 请使用 ali config set 命令生成配置文件。')
       return
@@ -333,6 +335,7 @@ export class BktManager {
     // 收集待上传文件: 手动指定优先, 否则扫描当前目录交互式选择
     // filePaths 是可选参数, 用 && 短路先确认它非 undefined 再读 length, 避免空值访问报错
     const uploads = (filePaths && (filePaths.length > 0)) ? this.resolveFiles(filePaths) : await this.pickFiles()
+    this.logger.debug({uploads},"需要上传的文件")
     if (uploads.length === 0) return
 
     // 指定桶名则直接查找, 否则交互式选择

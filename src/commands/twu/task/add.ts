@@ -40,7 +40,7 @@ export default class TwuTaskAdd extends Command {
     const {flags} = await this.parse(TwuTaskAdd)
 
     // #region 采集 AppKey
-    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
     const appKeys = configManager.getCurrentProfile()?.tingwu_app_keys ?? []
 
     let appKey: string

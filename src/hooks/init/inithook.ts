@@ -1,7 +1,10 @@
 import {Hook} from '@oclif/core'
 
-const hook: Hook<'init'> = async function () {
-  // 当前无需执行任何初始化逻辑
+import {ConfigManager} from '../../lib/config/config.js'
+
+const hook: Hook<'init'> = async function (options) {
+  // 命令执行前注入 oclif 特有的配置目录, 供 ConfigManager 单例统一提供配置文件路径
+  ConfigManager.setConfigDir(options.config.configDir)
 }
 
 export default hook

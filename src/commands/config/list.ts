@@ -8,7 +8,7 @@ export default class ConfigLs extends Command {
   static examples = ['<%= config.bin %> <%= command.id %>']
 
   public async run(): Promise<void> {
-    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
     const configPath = configManager.getConfigPath()
 
     this.log(`配置文件路径: ${configPath}`)

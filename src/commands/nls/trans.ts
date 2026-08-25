@@ -39,7 +39,7 @@ export default class NlsTrans extends Command {
 
   // #region 采集 AppKey (flag 优先, 否则从配置模糊选择或新增)
   private async resolveAppKey(fromFlag?: string): Promise<string> {
-    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
     const appKeys = configManager.getCurrentProfile()?.nls_app_keys ?? []
 
     let appKey: string

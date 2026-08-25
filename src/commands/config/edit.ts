@@ -17,7 +17,7 @@ export default class ConfigEdit extends Command {
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(ConfigEdit)
-    const configManager = new ConfigManager(ConfigManager.getDefaultPath())
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
 
     // 确保配置文件存在, 不存在则写入默认空配置, 避免编辑器读取时报错
     if (!configManager.readConfig()) {

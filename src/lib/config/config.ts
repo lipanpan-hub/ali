@@ -1,24 +1,42 @@
 import * as fs from 'node:fs'
-import * as os from 'node:os'
 import {dirname, join} from 'node:path'
 
 import type {Config, Profile} from './types.js'
 
 export class ConfigManager {
+  // 进程级单例: 存放 oclif init hook 注入的 this.config.configDir
+  private static configDir: string | undefined
   private configPath: string
 
   constructor(configPath: string) {
     this.configPath = configPath
   }
 
+  // #region 配置目录单例(由 oclif init hook 在命令执行前注入一次)
   /**
-   * 获取配置文件的默认存储路径。
+   * 基于注入的 oclif 配置目录, 解析出配置文件 (config.json) 的完整路径。
    *
-   * @returns 位于用户主目录下的 `.aliops/config.json` 绝对路径
+   * @returns 配置文件绝对路径
+   * @throws 当配置目录尚未通过 setConfigDir 注入时抛出
    */
-  static getDefaultPath(): string {
-    return join(os.homedir(), '.aliops', 'config.json')
+  static resolveConfigPath(): string {
+    if (!ConfigManager.configDir) {
+      throw new Error('配置目录尚未初始化, 请确认 oclif init hook 已执行')
+    }
+
+    return join(ConfigManager.configDir, 'config.json')
   }
+
+  /**
+   * 由 oclif init hook 注入 oclif 特有的配置目录。
+   *
+   * @param configDir - oclif 的 `this.config.configDir`
+   */
+  static setConfigDir(configDir: string): void {
+    ConfigManager.configDir = configDir
+  }
+  // #endregion
+
 
   getConfigPath(): string {
     return this.configPath
