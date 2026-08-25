@@ -1,8 +1,9 @@
-import {Args, Command, Flags} from '@oclif/core'
+import {Args, Flags} from '@oclif/core'
 
+import {BaseCommand} from '../../lib/base-command.js'
 import {BktManager} from '../../lib/bkt/bkt.js'
 
-export default class BktSign extends Command {
+export default class BktSign extends BaseCommand {
   static aliases = ['bkt:upload-url']
   static args = {
     bucket: Args.string({description: '存储桶名称', required: false}),

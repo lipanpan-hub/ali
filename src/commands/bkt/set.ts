@@ -1,8 +1,7 @@
-import {Command} from '@oclif/core'
-
+import {BaseCommand} from '../../lib/base-command.js'
 import {BktManager} from '../../lib/bkt/bkt.js'
 
-export default class BktSet extends Command {
+export default class BktSet extends BaseCommand {
   static aliases = ['bkt:config']
   static description = '交互式设置存储桶属性'
   static examples = ['<%= config.bin %> <%= command.id %>']

@@ -1,11 +1,12 @@
-import {Args, Command} from '@oclif/core'
+import {Args} from '@oclif/core'
 import prompts from 'prompts'
 
+import {BaseCommand} from '../../../lib/base-command.js'
 import {BktManager} from '../../../lib/bkt/bkt.js'
 
 // 这个命令让用户交互式选择存储桶
 // 用户选定存储桶之后再让用户交互式选择(prompts+fuse.js)一个或多个存储桶当中的object 执行删除操作
-export default class BktObjDel extends Command {
+export default class BktObjDel extends BaseCommand {
   static aliases = ['bkt:obj:rm']
   static args = {
     bucket: Args.string({description: '存储桶名称', required: false}),

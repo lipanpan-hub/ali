@@ -1,7 +1,7 @@
 import {confirm, search} from '@inquirer/prompts'
-import {Command} from '@oclif/core'
 import Fuse from 'fuse.js'
 
+import {BaseCommand} from '../../lib/base-command.js'
 import {BktManager} from '../../lib/bkt/bkt.js'
 
 interface BucketChoice {
@@ -9,7 +9,7 @@ interface BucketChoice {
   region: string
 }
 
-export default class BktDel extends Command {
+export default class BktDel extends BaseCommand {
   static aliases = ['bkt:rm']
   static description = '删除空的 OSS 存储空间（交互式选择）'
   static examples = ['<%= config.bin %> <%= command.id %>']

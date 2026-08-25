@@ -7,6 +7,8 @@ import Table from 'cli-table3'
 import Fuse from 'fuse.js'
 import prompts from 'prompts'
 
+import type {OssBktBinding} from '../config/types.js'
+
 import {wrap} from '../client/wrap.js'
 import {ConfigManager} from '../config/config.js'
 import { createLogger } from '../logger/index.js'
@@ -694,6 +696,179 @@ export class BktManager {
       console.log(`有效期: ${expires} 秒`)
       console.log(`上传地址: ${url}`)
       console.log('提示: 使用 HTTP PUT 方法将文件内容上传到该地址')
+    })
+  }
+  // #endregion
+
+  // #region 添加本地目录与存储桶的绑定
+  async addBinding(): Promise<void> {
+    if (!this.client || !this.profile) return
+
+    // 采集本地目录: 校验路径存在且为目录
+    const inputDir = await inquirer.input({
+      message: '请输入要绑定的本地目录:',
+      validate(value) {
+        if (!value) return '本地目录不能为空'
+        const dir = resolve(value)
+        if (!existsSync(dir)) return '目录不存在'
+        if (!statSync(dir).isDirectory()) return '该路径不是目录'
+        return true
+      },
+    })
+    const localDir = resolve(inputDir)
+
+    // 选择要绑定的存储桶
+    const bucket = await this.selectBucket()
+    if (!bucket) return
+
+    // 反向过滤器: 命中则从本地目录中去除; 正向过滤器: 命中则保留
+    const excludeFilters = await this.collectFilters('反向过滤器(去除文件)')
+    const includeFilters = await this.collectFilters('正向过滤器(保留文件)')
+
+    // 追加到当前档案的绑定列表并持久化
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
+    const bindings = configManager.getCurrentProfile()?.oss_bkt_binding ?? []
+
+    /* eslint-disable camelcase */
+    const binding: OssBktBinding = {
+      bucket_name: bucket.name,
+      bucket_region: bucket.region,
+      exclude_filters: excludeFilters,
+      include_filters: includeFilters,
+      local_dir: localDir,
+    }
+    const ok = configManager.updateCurrentProfile({oss_bkt_binding: [...bindings, binding]})
+    /* eslint-enable camelcase */
+
+    if (ok) {
+      console.log(`已创建绑定: ${localDir} <-> ${bucket.name} (${bucket.region})`)
+      console.log(`反向过滤器 ${excludeFilters.length} 个, 正向过滤器 ${includeFilters.length} 个`)
+    } else {
+      console.log('保存失败: 当前无可用配置, 请先执行 ali config set')
+    }
+  }
+
+  // 循环采集多个正则过滤器: 直接回车结束, 每次输入即校验正则合法性
+  private async collectFilters(label: string): Promise<string[]> {
+    const filters: string[] = []
+    let hasMore = true
+    while (hasMore) {
+      const pattern = await inquirer.input({
+        message: `请输入${label}正则表达式 (直接回车结束):`,
+        validate(value) {
+          if (!value) return true // 允许空值以结束采集
+          try {
+            const compiled = new RegExp(value)
+            return Boolean(compiled)
+          } catch (error) {
+            return `无效的正则表达式: ${(error as Error).message}`
+          }
+        },
+      })
+
+      if (pattern) {
+        filters.push(pattern)
+      } else {
+        hasMore = false
+      }
+    }
+
+    return filters
+  }
+  // #endregion
+
+  // #region 列出绑定关系与预览可上传文件
+  /**
+   * 列出当前档案下配置的所有本地目录与 OSS 存储桶的绑定关系。
+   */
+  async listBindings(): Promise<void> {
+    if (!this.profile) return
+
+    const bindings = this.profile.oss_bkt_binding ?? []
+    if (bindings.length === 0) {
+      console.log('当前档案未配置任何绑定关系, 请先执行 ali bkt binding add')
+      return
+    }
+
+    const table = new Table({
+      head: ['#', '本地目录', '存储桶', '区域', '反向过滤器', '正向过滤器'],
+    })
+
+    for (const [i, b] of bindings.entries()) {
+      table.push([
+        i + 1,
+        b.local_dir,
+        b.bucket_name,
+        b.bucket_region,
+        b.exclude_filters.join('\n') || '-',
+        b.include_filters.join('\n') || '-',
+      ])
+    }
+
+    console.log(table.toString())
+    console.log(`共 ${bindings.length} 个绑定关系`)
+  }
+
+  /**
+   * 交互式选择一个绑定关系, 对其本地目录应用过滤器, 打印最终可上传的文件列表。
+   */
+  async runBinding(): Promise<void> {
+    if (!this.profile) return
+
+    const bindings = this.profile.oss_bkt_binding ?? []
+    if (bindings.length === 0) {
+      console.log('当前档案未配置任何绑定关系, 请先执行 ali bkt binding add')
+      return
+    }
+
+    // 交互式模糊搜索选择一个绑定
+    const fuse = new Fuse(bindings, {keys: ['local_dir', 'bucket_name', 'bucket_region'], threshold: 0.4})
+    const selected = await inquirer.search<OssBktBinding>({
+      message: '搜索并选择一个绑定关系',
+      source: (term) => {
+        const results = term ? fuse.search(term).map((r) => r.item) : bindings
+        return results.map((b) => ({
+          description: `${b.bucket_name} (${b.bucket_region})`,
+          name: b.local_dir,
+          value: b,
+        }))
+      },
+    })
+
+    // 目录可能在绑定后被删除或移动, 预览前先校验
+    if (!existsSync(selected.local_dir) || !statSync(selected.local_dir).isDirectory()) {
+      console.log(`本地目录不存在或不是目录: ${selected.local_dir}`)
+      return
+    }
+
+    const files = this.applyBindingFilters(selected)
+
+    console.log(`\n绑定: ${selected.local_dir} <-> ${selected.bucket_name} (${selected.bucket_region})`)
+    console.log(`过滤后可上传文件 ${files.length} 个:`)
+    if (files.length === 0) {
+      console.log('  (无)')
+      return
+    }
+
+    for (const f of files) {
+      console.log(`  ${f}`)
+    }
+  }
+
+  // 依据绑定的过滤器筛选本地目录文件, 返回最终可上传的相对路径列表
+  private applyBindingFilters(binding: OssBktBinding): string[] {
+    const allFiles = this.scanFiles(binding.local_dir)
+
+    // 预编译正则, 避免在循环内重复构造 (正则合法性已在添加绑定时校验)
+    const includeRegexps = binding.include_filters.map((p) => new RegExp(p))
+    const excludeRegexps = binding.exclude_filters.map((p) => new RegExp(p))
+
+    return allFiles.filter((file) => {
+      // 正向过滤器非空时作为白名单: 必须命中至少一个才保留; 为空则默认全部保留
+      const isIncluded = (includeRegexps.length === 0) || includeRegexps.some((re) => re.test(file))
+      // 反向过滤器作为黑名单: 命中任意一个即去除 (优先级高于白名单)
+      const isExcluded = excludeRegexps.some((re) => re.test(file))
+      return isIncluded && (!isExcluded)
     })
   }
   // #endregion

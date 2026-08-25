@@ -1,11 +1,12 @@
 import * as inquirer from '@inquirer/prompts'
-import {Args, Command, Flags} from '@oclif/core'
+import {Args, Flags} from '@oclif/core'
 import Fuse from 'fuse.js'
 
+import {BaseCommand} from '../../lib/base-command.js'
 import {BktManager} from '../../lib/bkt/bkt.js'
 import {regionChoices} from '../../lib/utils/regions.js'
 
-export default class BktAdd extends Command {
+export default class BktAdd extends BaseCommand {
   static aliases = ['bkt:create']
   static args = {
     name: Args.string({description: '存储桶名称', required: false}),

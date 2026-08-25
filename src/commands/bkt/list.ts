@@ -1,8 +1,9 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 
+import {BaseCommand} from '../../lib/base-command.js'
 import {BktManager} from '../../lib/bkt/bkt.js'
 
-export default class BktLs extends Command {
+export default class BktLs extends BaseCommand {
   static aliases = ['bkt:ls']
   static description = '列出当前账号的所有 OSS 存储空间'
   static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> -d']
