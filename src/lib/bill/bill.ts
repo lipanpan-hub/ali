@@ -108,7 +108,7 @@ export class BillManager {
     const res = await wrap('查询实例账单', async () => {
       do {
         const request = new DescribeInstanceBillRequest({billingCycle, maxResults: 300, nextToken})
-        // eslint-disable-next-line no-await-in-loop
+         
         const page = await this.client.describeInstanceBillWithOptions(request, createRuntime())
         const items = page.body?.data?.items ?? []
         for (const i of items) {

@@ -10,7 +10,6 @@ import {
   matchesKey,
   ProcessTerminal,
   setKeybindings,
-  Spacer,
   Text,
   truncateToWidth,
   TUI,

@@ -79,7 +79,7 @@ export class BktManager {
 
     const res = await wrap('获取存储空间列表', async () => {
       do {
-        // eslint-disable-next-line no-await-in-loop
+         
         const page = await this.client.listBuckets({marker, 'max-keys': 1000})
         all.push(...(page.buckets ?? []))
         marker = page.isTruncated ? page.nextMarker : null
@@ -159,7 +159,7 @@ export class BktManager {
     await wrap('获取对象列表', async () => {
       let token: null | string = null
       do {
-        // eslint-disable-next-line no-await-in-loop
+         
         const res: ListObjectsResult = await client.listV2({'continuation-token': token, 'max-keys': 1000})
         all.push(...(res.objects ?? []))
         token = res.isTruncated ? res.nextContinuationToken : null
@@ -353,7 +353,7 @@ export class BktManager {
     })
 
     for (const {filePath, name} of uploads) {
-      // eslint-disable-next-line no-await-in-loop
+       
       await wrap(`上传 ${name}`, () => this.uploadSingle(client, name, filePath))
     }
 
@@ -623,7 +623,7 @@ export class BktManager {
       const BATCH_SIZE = 1000
       for (let i = 0; i < objectNames.length; i += BATCH_SIZE) {
         const batch = objectNames.slice(i, i + BATCH_SIZE)
-        // eslint-disable-next-line no-await-in-loop
+         
         await client.deleteMulti(batch, {quiet: true})
       }
 
