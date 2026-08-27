@@ -1,4 +1,5 @@
-import {existsSync, readdirSync, statSync} from 'node:fs'
+import {createHash} from 'node:crypto'
+import {createReadStream, existsSync, readdirSync, statSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {basename, join, resolve} from 'node:path'
 
@@ -24,6 +25,7 @@ interface BucketInfo {
 }
 
 interface ObjectInfo {
+  etag?: string
   lastModified: string
   name: string
   size: number
@@ -813,17 +815,39 @@ export class BktManager {
    * 交互式选择一个绑定关系, 对其本地目录应用过滤器, 打印最终可上传的文件列表。
    */
   async runBinding(): Promise<void> {
-    if (!this.profile) return
+    const selected = await this.selectBinding()
+    if (!selected) return
 
-    const bindings = this.profile.oss_bkt_binding ?? []
-    if (bindings.length === 0) {
-      console.log('当前档案未配置任何绑定关系, 请先执行 ali bkt binding add')
+    // 目录可能在绑定后被删除或移动, 预览前先校验
+    if (!existsSync(selected.local_dir) || !statSync(selected.local_dir).isDirectory()) {
+      console.log(`本地目录不存在或不是目录: ${selected.local_dir}`)
       return
     }
 
-    // 交互式模糊搜索选择一个绑定
+    const uploads = this.resolveBindingUploads(selected)
+
+    console.log(`\n绑定: ${selected.local_dir} <-> ${selected.bucket_name} (${selected.bucket_region})`)
+    console.log(`过滤后可上传文件 ${uploads.length} 个 (对象名):`)
+    if (uploads.length === 0) {
+      console.log('  (无)')
+      return
+    }
+
+    for (const {name} of uploads) {
+      console.log(`  ${name}`)
+    }
+  }
+
+  // 交互式模糊搜索选择一个绑定关系, 无绑定时返回 null
+  private async selectBinding(): Promise<null | OssBktBinding> {
+    const bindings = this.profile?.oss_bkt_binding ?? []
+    if (bindings.length === 0) {
+      console.log('当前档案未配置任何绑定关系, 请先执行 ali bkt binding add')
+      return null
+    }
+
     const fuse = new Fuse(bindings, {keys: ['local_dir', 'bucket_name', 'bucket_region'], threshold: 0.4})
-    const selected = await inquirer.search<OssBktBinding>({
+    return inquirer.search<OssBktBinding>({
       message: '搜索并选择一个绑定关系',
       source: (term) => {
         const results = term ? fuse.search(term).map((r) => r.item) : bindings
@@ -834,25 +858,17 @@ export class BktManager {
         }))
       },
     })
+  }
 
-    // 目录可能在绑定后被删除或移动, 预览前先校验
-    if (!existsSync(selected.local_dir) || !statSync(selected.local_dir).isDirectory()) {
-      console.log(`本地目录不存在或不是目录: ${selected.local_dir}`)
-      return
-    }
-
-    const files = this.applyBindingFilters(selected)
-
-    console.log(`\n绑定: ${selected.local_dir} <-> ${selected.bucket_name} (${selected.bucket_region})`)
-    console.log(`过滤后可上传文件 ${files.length} 个:`)
-    if (files.length === 0) {
-      console.log('  (无)')
-      return
-    }
-
-    for (const f of files) {
-      console.log(`  ${f}`)
-    }
+  // 应用过滤器后, 构造可直接交给 uploadSingle 的上传项列表
+  // name 以本地文件夹名开头 (如 photos/sub/a.txt), 使云端保留整个目录层级
+  private resolveBindingUploads(binding: OssBktBinding): Array<{filePath: string; name: string}> {
+    const relFiles = this.applyBindingFilters(binding)
+    const dirName = basename(binding.local_dir)
+    return relFiles.map((rel) => ({
+      filePath: join(binding.local_dir, rel),
+      name: `${dirName}/${rel}`,
+    }))
   }
 
   // 依据绑定的过滤器筛选本地目录文件, 返回最终可上传的相对路径列表
@@ -869,6 +885,103 @@ export class BktManager {
       // 反向过滤器作为黑名单: 命中任意一个即去除 (优先级高于白名单)
       const isExcluded = excludeRegexps.some((re) => re.test(file))
       return isIncluded && (!isExcluded)
+    })
+  }
+
+  /**
+   * 交互式选择一个绑定关系, 将本地目录中过滤后的文件同步上传到 OSS。
+   * 上传前拉取云端对象做增量比对, 内容未变化的文件跳过, 避免重复上传。
+   */
+  async syncBinding(): Promise<void> {
+    if (!this.client || !this.profile) return
+
+    const binding = await this.selectBinding()
+    if (!binding) return
+
+    // 目录可能在绑定后被删除或移动, 上传前先校验
+    if (!existsSync(binding.local_dir) || !statSync(binding.local_dir).isDirectory()) {
+      console.log(`本地目录不存在或不是目录: ${binding.local_dir}`)
+      return
+    }
+
+    const uploads = this.resolveBindingUploads(binding)
+    if (uploads.length === 0) {
+      console.log('过滤后没有可上传的文件')
+      return
+    }
+
+    const client = new OSS({
+      accessKeyId: this.profile.access_key_id,
+      accessKeySecret: this.profile.access_key_secret,
+      bucket: binding.bucket_name,
+      region: binding.bucket_region,
+    })
+
+    // 增量同步: 先建立云端对象索引, 用于判断哪些文件已同步
+    const remoteMap = await this.getRemoteObjectMap(binding)
+
+    let uploadedCount = 0
+    let skippedCount = 0
+    for (const {filePath, name} of uploads) {
+       
+      if (await this.isAlreadySynced(filePath, name, remoteMap)) {
+        skippedCount++
+        console.log(`- 跳过(已同步) ${name}`)
+        continue
+      }
+
+       
+      await wrap(`上传 ${name}`, () => this.uploadSingle(client, name, filePath))
+      uploadedCount++
+    }
+
+    console.log(
+      `\n同步完成: 上传 ${uploadedCount} 个, 跳过 ${skippedCount} 个, 共 ${uploads.length} 个 -> ${binding.bucket_name}`,
+    )
+  }
+
+  // 拉取云端全部对象, 建立 对象名 -> {etag, size} 的索引, 用于增量比对
+  private async getRemoteObjectMap(binding: OssBktBinding): Promise<Map<string, {etag: string; size: number}>> {
+    // getObjects 仅使用 name 与 region 构造桶级客户端, 此处构造最小可用的 BucketInfo 即可
+    const bucket = {name: binding.bucket_name, region: binding.bucket_region} as BucketInfo
+    const objects = await this.getObjects(bucket)
+
+    const map = new Map<string, {etag: string; size: number}>()
+    for (const o of objects) {
+      // etag 服务端带双引号, 去掉后统一小写便于与本地 MD5 比对
+      map.set(o.name, {etag: (o.etag ?? '').replaceAll('"', '').toLowerCase(), size: o.size})
+    }
+
+    return map
+  }
+
+  // 判断本地文件是否已与云端一致 (无需重复上传)
+  private async isAlreadySynced(
+    filePath: string,
+    name: string,
+    remoteMap: Map<string, {etag: string; size: number}>,
+  ): Promise<boolean> {
+    const remote = remoteMap.get(name)
+    if (!remote) return false // 云端不存在, 需要上传
+
+    // 分片上传对象的 etag 形如 "xxxx-N", 不是整文件 MD5, 无法直接比对, 退化为按大小判断
+    if (!remote.etag || remote.etag.includes('-')) {
+      return statSync(filePath).size === remote.size
+    }
+
+    // 普通对象 etag 即文件 MD5, 内容一致则视为已同步
+    const localMD5 = await this.calcFileMD5(filePath)
+    return localMD5 === remote.etag
+  }
+
+  // 流式计算本地文件的 MD5, 避免大文件一次性读入内存
+  private calcFileMD5(filePath: string): Promise<string> {
+    return new Promise((resolvePromise, rejectPromise) => {
+      const hash = createHash('md5')
+      const stream = createReadStream(filePath)
+      stream.on('data', (chunk) => hash.update(chunk))
+      stream.on('end', () => resolvePromise(hash.digest('hex')))
+      stream.on('error', rejectPromise)
     })
   }
   // #endregion
