@@ -985,4 +985,62 @@ export class BktManager {
     })
   }
   // #endregion
+
+  // #region 删除绑定关系
+  /**
+   * 交互式选择当前档案下的一个绑定关系并从配置文件中删除。
+   * 选项值使用数组索引以精确定位, 避免同名绑定重复时误删。
+   */
+  async deleteBinding(): Promise<void> {
+    if (!this.profile) return
+
+    // 读取当前档案的绑定列表, 删除后写回同一实例保证引用一致
+    const configManager = new ConfigManager(ConfigManager.resolveConfigPath())
+    const bindings = configManager.getCurrentProfile()?.oss_bkt_binding ?? []
+    if (bindings.length === 0) {
+      console.log('当前档案未配置任何绑定关系, 请先执行 ali bkt binding add')
+      return
+    }
+
+    // 给每个绑定附带原始索引, 供模糊搜索选中后精确定位
+    const indexed = bindings.map((b, i) => ({...b, index: i}))
+    const fuse = new Fuse(indexed, {keys: ['local_dir', 'bucket_name', 'bucket_region'], threshold: 0.4})
+
+    const index = await inquirer.search<number>({
+      message: '搜索并选择要删除的绑定关系',
+      source: (term) => {
+        const items = term ? fuse.search(term).map((r) => r.item) : indexed
+        return items.map((b) => ({
+          description: `${b.bucket_name} (${b.bucket_region})`,
+          name: b.local_dir,
+          value: b.index,
+        }))
+      },
+    })
+
+    const target = bindings[index]
+
+    // 二次确认, 避免误删
+    const confirmed = await inquirer.confirm({
+      default: false,
+      message: `确认删除绑定 ${target.local_dir} <-> ${target.bucket_name} (${target.bucket_region})?`,
+    })
+    if (!confirmed) {
+      console.log('已取消删除')
+      return
+    }
+
+    // 过滤掉选中索引的绑定后持久化
+    const rest = bindings.filter((_, i) => (i !== index))
+    /* eslint-disable camelcase */
+    const ok = configManager.updateCurrentProfile({oss_bkt_binding: rest})
+    /* eslint-enable camelcase */
+
+    if (ok) {
+      console.log(`已删除绑定: ${target.local_dir} <-> ${target.bucket_name} (${target.bucket_region})`)
+    } else {
+      console.log('保存失败: 当前无可用配置, 请先执行 ali config set')
+    }
+  }
+  // #endregion
 }
