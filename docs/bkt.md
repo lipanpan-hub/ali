@@ -4,14 +4,27 @@
 管理 OSS 存储空间
 
 * [`ali bkt add [NAME]`](#ali-bkt-add-name)
+* [`ali bkt bd add`](#ali-bkt-bd-add)
+* [`ali bkt bd del`](#ali-bkt-bd-del)
+* [`ali bkt bd ls`](#ali-bkt-bd-ls)
+* [`ali bkt bd sync`](#ali-bkt-bd-sync)
+* [`ali bkt binding add`](#ali-bkt-binding-add)
+* [`ali bkt binding create`](#ali-bkt-binding-create)
+* [`ali bkt binding del`](#ali-bkt-binding-del)
+* [`ali bkt binding list`](#ali-bkt-binding-list)
+* [`ali bkt binding ls`](#ali-bkt-binding-ls)
+* [`ali bkt binding remove`](#ali-bkt-binding-remove)
+* [`ali bkt binding sync`](#ali-bkt-binding-sync)
 * [`ali bkt config`](#ali-bkt-config)
 * [`ali bkt create [NAME]`](#ali-bkt-create-name)
 * [`ali bkt del`](#ali-bkt-del)
 * [`ali bkt list`](#ali-bkt-list)
 * [`ali bkt ls`](#ali-bkt-ls)
+* [`ali bkt obj del [BUCKET]`](#ali-bkt-obj-del-bucket)
 * [`ali bkt obj info [BUCKET] [OBJECT]`](#ali-bkt-obj-info-bucket-object)
 * [`ali bkt obj list [BUCKET]`](#ali-bkt-obj-list-bucket)
 * [`ali bkt obj ls [BUCKET]`](#ali-bkt-obj-ls-bucket)
+* [`ali bkt obj rm [BUCKET]`](#ali-bkt-obj-rm-bucket)
 * [`ali bkt obj show [BUCKET] [OBJECT]`](#ali-bkt-obj-show-bucket-object)
 * [`ali bkt obj sign [BUCKET] [OBJECT]`](#ali-bkt-obj-sign-bucket-object)
 * [`ali bkt obj up [BUCKET]`](#ali-bkt-obj-up-bucket)
@@ -49,6 +62,236 @@ EXAMPLES
 ```
 
 _See code: [src/commands/bkt/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/add.ts)_
+
+## `ali bkt bd add`
+
+创建本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt bd add
+
+DESCRIPTION
+  创建本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding create
+  $ ali bkt bd add
+
+EXAMPLES
+  $ ali bkt bd add
+```
+
+## `ali bkt bd del`
+
+交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt bd del
+
+DESCRIPTION
+  交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding remove
+  $ ali bkt bd del
+
+EXAMPLES
+  $ ali bkt bd del
+```
+
+## `ali bkt bd ls`
+
+列出本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt bd ls [-r]
+
+FLAGS
+  -r, --run  交互式选择一个绑定并预览过滤后可上传的文件列表
+
+DESCRIPTION
+  列出本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding list
+  $ ali bkt bd ls
+
+EXAMPLES
+  $ ali bkt bd ls
+
+  $ ali bkt bd ls --run
+```
+
+## `ali bkt bd sync`
+
+交互式选择一个绑定关系, 将本地目录中过滤后的文件增量同步到 OSS 存储桶
+
+```
+USAGE
+  $ ali bkt bd sync
+
+DESCRIPTION
+  交互式选择一个绑定关系, 将本地目录中过滤后的文件增量同步到 OSS 存储桶
+
+ALIASES
+  $ ali bkt bd sync
+
+EXAMPLES
+  $ ali bkt bd sync
+```
+
+## `ali bkt binding add`
+
+创建本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding add
+
+DESCRIPTION
+  创建本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding create
+  $ ali bkt bd add
+
+EXAMPLES
+  $ ali bkt binding add
+```
+
+_See code: [src/commands/bkt/binding/add.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/binding/add.ts)_
+
+## `ali bkt binding create`
+
+创建本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding create
+
+DESCRIPTION
+  创建本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding create
+  $ ali bkt bd add
+
+EXAMPLES
+  $ ali bkt binding create
+```
+
+## `ali bkt binding del`
+
+交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding del
+
+DESCRIPTION
+  交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding remove
+  $ ali bkt bd del
+
+EXAMPLES
+  $ ali bkt binding del
+```
+
+_See code: [src/commands/bkt/binding/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/binding/del.ts)_
+
+## `ali bkt binding list`
+
+列出本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding list [-r]
+
+FLAGS
+  -r, --run  交互式选择一个绑定并预览过滤后可上传的文件列表
+
+DESCRIPTION
+  列出本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding list
+  $ ali bkt bd ls
+
+EXAMPLES
+  $ ali bkt binding list
+
+  $ ali bkt binding list --run
+```
+
+## `ali bkt binding ls`
+
+列出本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding ls [-r]
+
+FLAGS
+  -r, --run  交互式选择一个绑定并预览过滤后可上传的文件列表
+
+DESCRIPTION
+  列出本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding list
+  $ ali bkt bd ls
+
+EXAMPLES
+  $ ali bkt binding ls
+
+  $ ali bkt binding ls --run
+```
+
+_See code: [src/commands/bkt/binding/ls.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/binding/ls.ts)_
+
+## `ali bkt binding remove`
+
+交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+```
+USAGE
+  $ ali bkt binding remove
+
+DESCRIPTION
+  交互式选择并删除一个本地目录与 OSS 存储桶的绑定关系
+
+ALIASES
+  $ ali bkt binding remove
+  $ ali bkt bd del
+
+EXAMPLES
+  $ ali bkt binding remove
+```
+
+## `ali bkt binding sync`
+
+交互式选择一个绑定关系, 将本地目录中过滤后的文件增量同步到 OSS 存储桶
+
+```
+USAGE
+  $ ali bkt binding sync
+
+DESCRIPTION
+  交互式选择一个绑定关系, 将本地目录中过滤后的文件增量同步到 OSS 存储桶
+
+ALIASES
+  $ ali bkt bd sync
+
+EXAMPLES
+  $ ali bkt binding sync
+```
+
+_See code: [src/commands/bkt/binding/sync.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/binding/sync.ts)_
 
 ## `ali bkt config`
 
@@ -162,6 +405,31 @@ EXAMPLES
   $ ali bkt ls -d
 ```
 
+## `ali bkt obj del [BUCKET]`
+
+删除 OSS 存储桶中的对象，交互式多选，未指定存储桶时交互式选择
+
+```
+USAGE
+  $ ali bkt obj del [BUCKET]
+
+ARGUMENTS
+  [BUCKET]  存储桶名称
+
+DESCRIPTION
+  删除 OSS 存储桶中的对象，交互式多选，未指定存储桶时交互式选择
+
+ALIASES
+  $ ali bkt obj rm
+
+EXAMPLES
+  $ ali bkt obj del
+
+  $ ali bkt obj del my-bucket
+```
+
+_See code: [src/commands/bkt/obj/del.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/bkt/obj/del.ts)_
+
 ## `ali bkt obj info [BUCKET] [OBJECT]`
 
 显示 OSS 存储桶中对象的详细信息，未指定时交互式选择
@@ -232,6 +500,29 @@ EXAMPLES
   $ ali bkt obj ls
 
   $ ali bkt obj ls my-bucket
+```
+
+## `ali bkt obj rm [BUCKET]`
+
+删除 OSS 存储桶中的对象，交互式多选，未指定存储桶时交互式选择
+
+```
+USAGE
+  $ ali bkt obj rm [BUCKET]
+
+ARGUMENTS
+  [BUCKET]  存储桶名称
+
+DESCRIPTION
+  删除 OSS 存储桶中的对象，交互式多选，未指定存储桶时交互式选择
+
+ALIASES
+  $ ali bkt obj rm
+
+EXAMPLES
+  $ ali bkt obj rm
+
+  $ ali bkt obj rm my-bucket
 ```
 
 ## `ali bkt obj show [BUCKET] [OBJECT]`

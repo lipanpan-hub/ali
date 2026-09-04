@@ -5,9 +5,7 @@
 
 * [`ali config edit`](#ali-config-edit)
 * [`ali config list`](#ali-config-list)
-* [`ali config ls`](#ali-config-ls)
 * [`ali config set`](#ali-config-set)
-* [`ali config show`](#ali-config-show)
 
 ## `ali config edit`
 
@@ -22,6 +20,9 @@ FLAGS
 
 DESCRIPTION
   编辑用户配置文件, 默认启动内置 TUI 编辑器, 也可选择系统中的外部编辑器
+
+ALIASES
+  $ ali cf edit
 
 EXAMPLES
   $ ali config edit
@@ -43,33 +44,14 @@ DESCRIPTION
   列出所有的配置
 
 ALIASES
-  $ ali config ls
-  $ ali config show
+  $ ali cf ls
+  $ ali cf show
 
 EXAMPLES
   $ ali config list
 ```
 
 _See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/list.ts)_
-
-## `ali config ls`
-
-列出所有的配置
-
-```
-USAGE
-  $ ali config ls
-
-DESCRIPTION
-  列出所有的配置
-
-ALIASES
-  $ ali config ls
-  $ ali config show
-
-EXAMPLES
-  $ ali config ls
-```
 
 ## `ali config set`
 
@@ -90,22 +72,3 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/set.ts)_
-
-## `ali config show`
-
-列出所有的配置
-
-```
-USAGE
-  $ ali config show
-
-DESCRIPTION
-  列出所有的配置
-
-ALIASES
-  $ ali config ls
-  $ ali config show
-
-EXAMPLES
-  $ ali config show
-```
