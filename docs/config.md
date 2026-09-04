@@ -30,7 +30,7 @@ EXAMPLES
   $ ali config edit --editor
 ```
 
-_See code: [src/commands/config/edit.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/edit.ts)_
+_See code: [src/commands/config/edit.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.13/src/commands/config/edit.ts)_
 
 ## `ali config list`
 
@@ -51,7 +51,7 @@ EXAMPLES
   $ ali config list
 ```
 
-_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/list.ts)_
+_See code: [src/commands/config/list.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.13/src/commands/config/list.ts)_
 
 ## `ali config set`
 
@@ -71,4 +71,4 @@ EXAMPLES
   $ ali config set
 ```
 
-_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/config/set.ts)_
+_See code: [src/commands/config/set.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.13/src/commands/config/set.ts)_

@@ -60,4 +60,4 @@ EXAMPLES
   $ ali nls trans -u https://example.com/a.wav -k myAppKey --words
 ```
 
-_See code: [src/commands/nls/trans.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.12/src/commands/nls/trans.ts)_
+_See code: [src/commands/nls/trans.ts](https://github.com/lipanpan-hub/ali/blob/v0.0.13/src/commands/nls/trans.ts)_
