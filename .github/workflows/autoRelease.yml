@@ -60,6 +60,7 @@ jobs:
           # 安装依赖
           npm install
           npm run build 
+          npx oclif manifest 
           # 执行 oclif readme 命令自动生成/更新 README.md
           npx oclif readme --multi
           # 检查是否有文件变更
